@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The renormalization group for the Ising model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+
+
+:root{
+  --paper:#EEF2F6; --panel:#FFFFFF; --ink:#15243A; --muted:#566779; --rule:#CBD5E0; --grid:#E3E9F0;
+  --accent:#1F4FD1; --crit:#B4235A;
+  --l16:#E69F00; --l32:#56B4E9; --l64:#009E73; --l128:#CC79A7; --l256:#0B5FA5;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1924; --panel:#142232; --ink:#E2E9F1; --muted:#93A4B8; --rule:#2B3D52; --grid:#1B2B3D;
+    --accent:#7A9DFF; --crit:#FF6F9C;
+    --l16:#F0B43C; --l32:#6CC3F2; --l64:#2FC596; --l128:#E08FC1; --l256:#8FB8FF;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1924; --panel:#142232; --ink:#E2E9F1; --muted:#93A4B8; --rule:#2B3D52; --grid:#1B2B3D;
+  --accent:#7A9DFF; --crit:#FF6F9C;
+  --l16:#F0B43C; --l32:#6CC3F2; --l64:#2FC596; --l128:#E08FC1; --l256:#8FB8FF;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.5;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;
+  font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 20px 60px}
+h1,h2,h3{font-family:var(--serif); font-weight:600; line-height:1.15; margin:0}
+h1{font-size:clamp(30px,4.6vw,48px); letter-spacing:-0.01em}
+h2{font-size:clamp(22px,2.8vw,30px); margin-bottom:8px}
+p{margin:0 0 10px}
+.lede{font-family:var(--serif); font-size:18px; line-height:1.55; max-width:68ch; margin-top:12px; color:var(--ink)}
+.prose{max-width:72ch; font-family:var(--serif); font-size:16.5px; line-height:1.6}
+section{margin-top:44px}
+sub{font-size:.72em}
+.hero{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(290px,1fr); gap:28px; margin-top:26px; align-items:start}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+.plate{background:var(--panel); border:2px solid var(--ink); padding:10px; border-radius:3px}
+#lat{width:100%; aspect-ratio:1/1; display:block; image-rendering:pixelated}
+.plate-note{font-size:13px; color:var(--muted); margin-top:8px}
+.controls{display:flex; flex-direction:column; gap:14px}
+.pbig{font-family:var(--serif); font-size:clamp(40px,6vw,64px); line-height:1; font-weight:600; letter-spacing:-0.02em}
+.pbig span{font-style:italic; font-weight:400}
+.slider-wrap{position:relative; padding-bottom:18px}
+input[type=range]{width:100%; accent-color:var(--accent); margin:0}
+.pcmark{position:absolute; top:22px; transform:translateX(-50%); font-size:12px; color:var(--crit); white-space:nowrap}
+.pcmark::before{content:""; position:absolute; left:50%; top:-6px; width:1px; height:6px; background:var(--crit)}
+.row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+button,select{font:inherit; font-size:14px; color:var(--ink); background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:6px 11px; cursor:pointer}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+fieldset{border:0; padding:0; margin:0}
+legend{font-size:13px; color:var(--muted); margin-bottom:4px}
+.seg{display:inline-flex; border:1px solid var(--rule); border-radius:5px; overflow:hidden; background:var(--panel)}
+.seg label{padding:6px 11px; font-size:14px; cursor:pointer}
+.seg input{position:absolute; opacity:0; pointer-events:none}
+.seg input:checked + span{font-weight:600; color:var(--accent)}
+.seg input:focus-visible + span{outline:2px solid var(--accent); outline-offset:2px}
+.field label.lab{font-size:13px; color:var(--muted); display:block; margin-bottom:4px}
+dl.readouts{display:grid; grid-template-columns:auto 1fr; gap:6px 16px; margin:0; padding:12px 14px; background:var(--panel); border:1px solid var(--rule); border-radius:5px}
+dl.readouts dt{color:var(--muted); font-size:14px}
+dl.readouts dd{margin:0; font-weight:600; text-align:right}
+.status{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin:12px 0 4px; font-size:13.5px}
+.chip{display:inline-flex; align-items:center; gap:6px}
+.sw{width:18px; height:3px; border-radius:2px; display:inline-block}
+.bar{height:4px; background:var(--grid); border-radius:2px; overflow:hidden; flex:1 1 160px; max-width:260px}
+.bar i{display:block; height:100%; width:0; background:var(--accent)}
+.figs{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:14px}
+figure{margin:0; background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:12px 12px 10px}
+figcaption{font-size:13.5px; color:var(--muted); margin-bottom:6px}
+figcaption b{color:var(--ink); font-weight:600; font-size:14.5px; display:block}
+figure canvas{width:100%; height:240px; display:block}
+figure.sq canvas{height:auto; aspect-ratio:1/1}
+figure.wide{grid-column:1 / -1}
+.stages{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px}
+@media (max-width:700px){.stages{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
+.stages canvas{width:100%; height:auto; aspect-ratio:1/1; display:block; border:1px solid var(--rule)}
+.stlab{display:block; font-size:12.5px; color:var(--muted); margin-top:4px}
+.fit{font-size:13.5px; margin:6px 0 0; min-height:1.4em}
+.clickable canvas{cursor:crosshair}
+.tbl{overflow-x:auto; margin-top:14px; background:var(--panel); border:1px solid var(--rule); border-radius:5px}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:640px}
+th,td{padding:8px 12px; text-align:left; border-bottom:1px solid var(--grid); vertical-align:top}
+th{font-weight:600; color:var(--muted); font-size:13px}
+td.num{text-align:right; white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.good{color:var(--l64)} .warn{color:var(--crit)}
+.two{display:grid; grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr); gap:20px; margin-top:14px; align-items:start}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.two figure canvas{height:340px}
+.sl{display:grid; grid-template-columns:1fr auto; gap:2px 10px; align-items:center; margin-bottom:12px}
+.sl label{font-size:14px}
+.sl output{font-weight:600}
+.sl input{grid-column:1 / -1}
+.note{font-size:13px; color:var(--muted); max-width:80ch}
+.keyref{border-left:4px solid var(--accent); background:var(--panel); padding:12px 16px; border-radius:0 5px 5px 0; margin:12px 0 16px; max-width:80ch}
+ol.refs{max-width:80ch; padding-left:1.4em; font-size:14.5px; line-height:1.55}
+ol.refs li{margin-bottom:8px}
+footer{margin-top:48px; font-size:13px; color:var(--muted); max-width:80ch}
+
+#st{width:100%; aspect-ratio:4/3; display:block; image-rendering:pixelated}
+#strip{width:100%; height:34px; display:block; margin-bottom:8px}
+.keyref{border-left:4px solid var(--accent); background:var(--panel); padding:12px 16px; border-radius:0 5px 5px 0; margin:12px 0 16px; max-width:80ch}
+ol.refs{max-width:80ch; padding-left:1.4em; font-size:14.5px; line-height:1.55}
+ol.refs li{margin-bottom:8px}
+.eq{font-family:var(--serif); font-size:17px; background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:10px 14px; display:inline-block; margin:6px 0 10px}
+.sl{display:grid; grid-template-columns:1fr auto; gap:2px 10px; align-items:center; margin-bottom:12px}
+.sl label{font-size:14px} .sl output{font-weight:600} .sl input{grid-column:1 / -1}
+.btns{display:flex; flex-wrap:wrap; gap:6px} .btns button{padding:4px 9px; font-size:13px}
+.mat{display:inline-grid; grid-template-columns:auto auto auto; gap:4px 14px; align-items:center; font-family:var(--serif); font-size:17px; background:var(--panel); border:1px solid var(--rule); border-radius:5px; padding:10px 16px; margin:6px 12px 10px 0}
+.mat .h{font-family:var(--sans); font-size:12.5px; color:var(--muted)}
+.chain{display:flex; flex-wrap:wrap; gap:0; margin:8px 0; font-family:var(--sans)}
+.chain span{width:26px; height:30px; border:1px solid var(--ink); margin-left:-1px; display:flex; align-items:center; justify-content:center; font-size:16px; background:var(--panel)}
+.chain span.dn{background:var(--ink); color:var(--panel)}
+.chain span.wall{box-shadow:inset 3px 0 0 var(--crit)}
+.two2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start; margin-top:14px}
+@media (max-width:860px){.two2{grid-template-columns:1fr}}
+
+.rad{white-space:nowrap}
+.rad .rs{display:inline-block; transform:scale(1.05,1.22); transform-origin:100% 85%; margin-right:-0.05em}
+.rad .rc{display:inline-block; border-top:0.075em solid currentColor; padding:0.04em 0.12em 0 0.1em; line-height:1.1}
+.ss{display:inline-flex; flex-direction:column; vertical-align:0.5em; line-height:1; font-size:0.72em; margin-left:0.04em; margin-right:0.04em}
+.ss sup,.ss sub{font-size:1em; vertical-align:baseline; line-height:1.02; position:static}
+
+#spin{width:100%; aspect-ratio:1/1; display:block; image-rendering:pixelated}
+#peC{width:100%; height:auto; aspect-ratio:1/1; display:block; cursor:pointer}
+[hidden]{display:none !important}
+input.num{width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px solid var(--rule); border-radius:5px; background:var(--panel); color:var(--ink)}
+
+[hidden]{display:none !important}
+#bs{width:100%; height:auto; aspect-ratio:1/1.08; display:block}
+#flow{width:100%; height:auto; aspect-ratio:1/1; display:block; cursor:crosshair; touch-action:none}
+#dec2{width:100%; height:auto; aspect-ratio:2/1; display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>The renormalization group for the Ising model</h1>
+  <p class="lede">Near T<sub>c</sub> the only length scale besides the lattice spacing is the correlation length ξ, which diverges at the critical point. Coarse-graining the lattice and rescaling it reduces ξ by a factor b, so away from T<sub>c</sub> the system flows toward one of two trivial fixed points, while at T<sub>c</sub> it stays self-similar. Turning this picture into equations justifies Widom’s scaling ansatz, the scaling form of the correlation function, and the universality of critical exponents.</p>
+  <p class="note" style="margin-top:6px">Based on lecture notes by Sang Hoon Lee for Chapter 2, following K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i> (2005). Units: k<sub>B</sub> = 1 and J = 1. <a href="#references" style="color:var(--accent)">References</a></p>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="plate"><canvas id="bs" aria-label="Block-spin transformation of three Ising lattices"></canvas></div>
+    <p class="plate-note" id="bsNote"></p>
+  </div>
+  <div class="controls">
+    <p class="prose" style="margin:0">Three square lattices are simulated live at reduced temperatures t &lt; 0, t = 0 and t &gt; 0. Each column applies the block-spin transformation R<sub>b</sub> twice, top to bottom, and redraws every stage at the same size. The lattices update once every 0.1 seconds, with local single-spin moves (Metropolis sweeps), so domains evolve smoothly from one picture to the next. After a new start the lattices first equilibrate for 3 000 sweeps at full speed, which takes about 15 seconds; averaging begins after that. Near T<sub>c</sub> single-spin updates relax slowly, so the t = 0 column keeps coarsening for a while.</p>
+    <div class="row" style="gap:16px">
+      <div class="field"><label class="lab" for="tSel">|t| = |T − T<sub>c</sub>|/T<sub>c</sub></label><select id="tSel"><option value="0.02">0.02</option><option value="0.05" selected>0.05</option><option value="0.1">0.1</option><option value="0.3">0.3</option></select></div>
+      <div class="field"><label class="lab" for="bSel">Block size b</label><select id="bSel"><option value="3" selected>3 (243 → 81 → 27)</option><option value="2">2 (256 → 128 → 64)</option></select></div>
+      <div class="field"><label class="lab" for="rSel">Coarse-graining rule</label><select id="rSel"><option value="maj" selected>Majority rule</option><option value="dec">Decimation (top-left spin)</option></select></div>
+    </div>
+    <div class="row"><button id="bsRun" class="primary">Pause</button><button id="bsReset">New lattices</button></div>
+    <dl class="readouts" id="bsRead"></dl>
+    <figure style="margin-top:2px"><figcaption><b>Flow of the nearest-neighbor correlation</b>⟨s<sub>I</sub>s<sub>J</sub>⟩ between neighboring block spins after n transformations, averaged over time. It rises toward 1 (the T = 0 fixed point) for t &lt; 0, falls toward 0 (T = ∞) for t &gt; 0, and changes least at t = 0.</figcaption><canvas id="nnC"></canvas></figure>
+  </div>
+</div>
+
+<section>
+  <h2>Kadanoff’s block spins</h2>
+  <p class="prose">Since spins are correlated up to ξ, regions smaller than ξ might behave like a single block spin. The real-space renormalization procedure is to (1) divide the lattice into blocks of linear size b, each with b<sup>d</sup> spins, (2) replace each block by a single block spin s<sub>I</sub> according to a coarse-graining rule, and (3) rescale all lengths by b to restore the original lattice spacing. The rule is not unique: the majority rule s<sub>I</sub> = sign(Σ<sub>i∈I</sub> s<sub>i</sub>), with ties broken at random, or decimation, where s<sub>I</sub> takes the value of one chosen spin in the block. Either way, fluctuations on scales below b are averaged out.</p>
+  <p class="prose">Every length shrinks by b, including the correlation length, ξ′ = ξ/b. At the critical point ξ = ∞ is unchanged; away from it the system moves away from t = 0. To first order t′ = λ<sub>t</sub>(b)t, and composing two transformations, λ<sub>t</sub>(b<sub>2</sub>)λ<sub>t</sub>(b<sub>1</sub>) = λ<sub>t</sub>(b<sub>1</sub>b<sub>2</sub>) with λ<sub>t</sub>(1) = 1, has the unique solution of a power law:</p>
+  <div class="eq">t′ = b<sup>y<sub>t</sub></sup>t,  h′ = b<sup>y<sub>h</sub></sup>h,  with y<sub>t</sub>, y<sub>h</sub> &gt; 0,  and ξ ∝ |t|<sup>−ν</sup> gives y<sub>t</sub> = 1/ν</div>
+  <p class="prose">Summing first over the configurations consistent with each block-spin configuration includes all 2<sup>N</sup> microstates, and defines the renormalized energy E′ through e<sup>−βE′<sub>{s<sub>I</sub>}</sub></sup> = Σ e<sup>−βE<sub>{s<sub>i</sub>}</sub></sup>. The partition function is invariant, Z(t, h, N) = Z(t′, h′, N′) with N′ = N/b<sup>d</sup>, so the free energy per spin obeys f(t, h) = b<sup>−d</sup>f(b<sup>y<sub>t</sub></sup>t, b<sup>y<sub>h</sub></sup>h). Choosing b = |t|<sup>−1/y<sub>t</sub></sup> ∝ ξ gives exactly Widom’s form f<sub>s</sub> = |t|<sup>2−α</sup>𝓕<sub>±</sub>(h/|t|<sup>Δ</sup>) with 2 − α = νd and Δ = y<sub>h</sub>/y<sub>t</sub>. The same argument for g(r, t, h) gives d − 2 + η = 2β y<sub>t</sub>. Two RG eigenvalues fix every exponent:</p>
+  <div class="row" style="gap:16px; align-items:flex-end; margin:8px 0">
+    <div class="field"><label class="lab" for="kd">d</label><select id="kd"><option>2</option><option>3</option><option>4</option></select></div>
+    <div class="field"><label class="lab" for="kyt">y<sub>t</sub> = 1/ν</label><input class="num" id="kyt" type="number" step="0.001" value="1" style="width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px solid var(--rule); border-radius:5px; background:var(--panel); color:var(--ink)"></div>
+    <div class="field"><label class="lab" for="kyh">y<sub>h</sub></label><input class="num" id="kyh" type="number" step="0.001" value="1.875" style="width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px solid var(--rule); border-radius:5px; background:var(--panel); color:var(--ink)"></div>
+    <div class="btns"><button data-k="2d">2D Ising</button><button data-k="3d">3D Ising</button><button data-k="mf">Mean field, d = 4</button></div>
+  </div>
+  <div class="tbl"><table id="kTable" aria-label="Exponents from the RG eigenvalues"></table></div>
+</section>
+
+<section>
+  <h2>Exact renormalization in one dimension</h2>
+  <p class="prose">Take b = 2 and let each block spin be the odd spin (decimation). Summing over each even spin s<sub>2</sub> between s<sub>1</sub> and s<sub>3</sub> gives 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>3</sub>)] = exp(K<sub>0</sub>′ + K<sub>1</sub>′s<sub>1</sub>s<sub>3</sub>), which only depends on s<sub>1</sub>s<sub>3</sub>. Matching the cases s<sub>1</sub> = ±s<sub>3</sub>:</p>
+  <div class="eq">K<sub>1</sub>′ = ½ ln cosh(2K<sub>1</sub>),  K<sub>0</sub>′ = ln[2<span class="rad"><span class="rs">√</span><span class="rc">cosh 2K<sub>1</sub></span></span>],  Z(K<sub>1</sub>, N) = e<sup>N′K<sub>0</sub>′</sup> Z(K<sub>1</sub>′, N′)</div>
+  <p class="prose">The partition function keeps its form with half the spins and a renormalized coupling. Since K<sub>1</sub>′ &lt; K<sub>1</sub> for every K<sub>1</sub> &gt; 0, the flow runs to the stable fixed point K<sub>1</sub>* = 0 (T = ∞, non-interacting spins, ξ = 0) away from the unstable one at K<sub>1</sub>* = ∞ (T = 0, fully aligned, ξ = 0). No transition at finite T, exactly as the transfer matrix showed. Because tanh K<sub>1</sub>′ = tanh² K<sub>1</sub>, the correlation length ξ = −1/ln tanh K halves exactly at each step, and the offsets K<sub>0</sub>′ add up to the free energy.</p>
+  <div class="two2">
+    <figure style="margin:0"><figcaption><b>The map K<sub>1</sub>′ = ½ ln cosh 2K<sub>1</sub> and its iteration</b>Dashed: K′ = K. The red staircase follows the flow from the starting coupling.</figcaption><canvas id="d1"></canvas></figure>
+    <div>
+      <div class="sl"><label for="d1K">Starting coupling K<sub>1</sub> = J/k<sub>B</sub>T</label><output id="d1Ko"></output><input type="range" id="d1K" min="0.1" max="4" step="0.01" value="2.5"></div>
+      <div class="tbl" style="margin-top:0"><table id="d1Table" aria-label="One-dimensional flow"></table></div>
+      <p class="note" id="d1Note" style="margin-top:8px"></p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Decimation in two dimensions</h2>
+  <p class="prose">On the square lattice, sum out every second spin (b = <span class="rad"><span class="rs">√</span><span class="rc">2</span></span>, followed by a 45° rotation). The decimated spin s<sub>5</sub> couples to its four neighbors through 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>2</sub> + s<sub>3</sub> + s<sub>4</sub>)], which can only be rewritten exactly by generating new couplings: a nearest-neighbor coupling K<sub>1</sub>′, a next-nearest-neighbor coupling K<sub>2</sub>′ (s<sub>1</sub> and s<sub>3</sub> now interact through s<sub>5</sub>), and a four-spin coupling K<sub>3</sub>′. Solving the eight conditions gives</p>
+  <div class="eq">K<sub>1</sub>′ = ¼ ln cosh 4K<sub>1</sub>,  K<sub>2</sub>′ = ⅛ ln cosh 4K<sub>1</sub>,  K<sub>3</sub>′ = ⅛ ln cosh 4K<sub>1</sub> − ½ ln cosh 2K<sub>1</sub></div>
+  <figure style="margin:10px 0 0"><canvas id="dec2" aria-label="Decimation on the square lattice"></canvas><figcaption style="margin-top:6px">Left: the gray spins are summed out; the remaining spins s<sub>1</sub> to s<sub>4</sub> surround the decimated s<sub>5</sub>. Right: the renormalized lattice, rotated 45°, with nearest-neighbor couplings K<sub>1</sub>′ (blue), next-nearest-neighbor couplings K<sub>2</sub>′ (red, dashed) and the four-spin coupling K<sub>3</sub>′ (shaded square).</figcaption></figure>
+  <p class="prose" style="margin-top:14px">Each further step generates couplings over longer distances, so the flow lives in an infinite-dimensional coupling space and must be truncated. Odd couplings such as s<sub>i</sub>s<sub>j</sub>s<sub>k</sub> never appear because E must be symmetric under s<sub>i</sub> → −s<sub>i</sub> at H = 0. Compare two truncations:</p>
+  <div class="row" style="gap:16px; align-items:flex-end; margin:8px 0">
+    <fieldset><legend>Truncation</legend><div class="seg"><label><input type="radio" name="tr" value="drop" checked><span>Drop all new couplings: K′ = ¼ ln cosh 4K</span></label><label><input type="radio" name="tr" value="k2"><span>Keep K<sub>2</sub>′ in K̃′ = K<sub>1</sub>′ + K<sub>2</sub>′ = ⅜ ln cosh 4K̃</span></label></div></fieldset>
+  </div>
+  <div class="two2">
+    <figure style="margin:0"><figcaption><b>The truncated map and its fixed points</b>Dashed: K′ = K. Dots: fixed points. The staircase starts from the chosen K.</figcaption><canvas id="d2"></canvas></figure>
+    <div>
+      <div class="sl"><label for="d2K">Starting coupling K</label><output id="d2Ko"></output><input type="range" id="d2K" min="0.05" max="1.2" step="0.001" value="0.55"></div>
+      <dl class="readouts" id="d2Read"></dl>
+      <figure style="margin-top:12px"><figcaption><b>The generated couplings against K<sub>1</sub></b>K<sub>1</sub>′ (blue), K<sub>2</sub>′ (red) and K<sub>3</sub>′ (dark). Near the fixed point (K ≈ 0.5) K<sub>3</sub>′ is much smaller than the other two, which is why it is dropped.</figcaption><canvas id="d2c"></canvas></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Wilson’s renormalization group</h2>
+  <p class="prose">A generalized Ising model in zero field is a point K = (K<sub>1</sub>, K<sub>2</sub>, K<sub>3</sub>, …) in the space of all couplings that respect the up–down symmetry: −βE = K<sub>0</sub>N + K<sub>1</sub>Σ<sub>nn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>2</sub>Σ<sub>nnn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>3</sub>Σ<sub>□</sub>s<sub>i</sub>s<sub>j</sub>s<sub>k</sub>s<sub>l</sub> + …. The original model lies on the K<sub>1</sub>-axis, at K = 0 for T = ∞ and at infinity for T = 0. The transformation K′ = R<sub>b</sub>(K) is a recursion that generates new couplings even if they started at zero. It obeys R<sub>b<sub>2</sub></sub>R<sub>b<sub>1</sub></sub> = R<sub>b<sub>1</sub>b<sub>2</sub></sub> but has no inverse, so it forms a semigroup rather than a group.</p>
+  <p class="prose">Since ξ(K′) = ξ(K)/b, a fixed point R<sub>b</sub>(K*) = K* must have ξ(K*) = 0 (the trivial weak- and strong-coupling fixed points) or ξ(K*) = ∞ (the non-trivial fixed point). Each fixed point has a basin of attraction; that of the non-trivial one, where ξ = ∞, is the critical surface. Near K*, δK′ = M(b)δK with M<sub>ij</sub> = ∂K<sub>i</sub>′/∂K<sub>j</sub>, and in its eigenbasis the scaling fields obey u<sub>i</sub>′ = λ<sub>i</sub>u<sub>i</sub> with λ<sub>i</sub> = b<sup>y<sub>i</sub></sup>. A field is relevant if y<sub>i</sub> &gt; 0 (driven away from K*), irrelevant if y<sub>i</sub> &lt; 0 (it dies out), and marginal if y<sub>i</sub> = 0. The irrelevant directions span the critical surface; the Ising model has only two relevant fields, t and h.</p>
+  <p class="prose">Below is the classic two-coupling approximation of the square-lattice decimation, keeping only the lowest order in K: K′ = 2K<sup>2</sup> + L and L′ = K<sup>2</sup>, where K is the nearest-neighbor and L the next-nearest-neighbor coupling. Click anywhere to start a trajectory.</p>
+  <div class="two2">
+    <figure style="margin:0"><figcaption><b>RG flow in the (K, L) plane</b>Arrows: one RG step. Black curve: the critical line, the basin of attraction of the non-trivial fixed point (star). Dots at the origin and beyond the top right are the weak- and strong-coupling fixed points. The original model is the axis L = 0.</figcaption><canvas id="flow"></canvas></figure>
+    <div>
+      <dl class="readouts" id="flRead"></dl>
+      <div class="row" style="margin-top:10px"><button id="flClear">Clear trajectories</button><button id="flCrit">Start just off the critical point on L = 0</button></div>
+      <p class="note" style="margin-top:10px">Trajectories that start on the critical line flow into the fixed point along the irrelevant direction. Any small offset along the relevant direction grows by λ<sub>1</sub> each step and is expelled toward one of the trivial fixed points: high temperature (toward the origin) or low temperature (toward infinity).</p>
+    </div>
+  </div>
+  <p class="prose" style="margin-top:18px">Apart from the constant factor e<sup>N′K<sub>0</sub>′</sup>, Z is invariant, so the singular part of the free energy obeys f<sub>s</sub>(K) = b<sup>−d</sup>f<sub>s</sub>(K′). Written in scaling fields after n steps, f<sub>s</sub>(t, h, u<sub>3</sub>, …) = b<sup>−nd</sup>f<sub>s</sub>(b<sup>ny<sub>t</sub></sup>t, b<sup>ny<sub>h</sub></sup>h, b<sup>ny<sub>3</sub></sup>u<sub>3</sub>, …). The irrelevant fields vanish as n → ∞, and choosing b<sup>ny<sub>t</sub></sup> = |t|<sup>−1</sup> gives f<sub>s</sub> = |t|<sup>d/y<sub>t</sub></sup>𝓕<sub>±</sub>(h/|t|<sup>y<sub>h</sub>/y<sub>t</sub></sup>): Widom’s ansatz, with 2 − α = d/y<sub>t</sub> = dν and Δ = y<sub>h</sub>/y<sub>t</sub>. Any model whose couplings flow to the same fixed point shares its y<sub>t</sub> and y<sub>h</sub>, and therefore its exponents. That is universality.</p>
+</section>
+
+<section id="references">
+  <h2>References</h2>
+  <div class="keyref"><p class="prose" style="margin:0"><b>Key reference.</b> K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i>, Imperial College Press, London (2005), Chapter 2.</p></div>
+  <ol class="refs">
+    <li>L. P. Kadanoff, “Scaling laws for Ising models near T<sub>c</sub>,” <i>Physics</i> <b>2</b>, 263 (1966).</li>
+    <li>K. G. Wilson, “Renormalization group and critical phenomena. I. Renormalization group and the Kadanoff scaling picture,” <i>Phys. Rev. B</i> <b>4</b>, 3174 (1971).</li>
+    <li>K. G. Wilson, “Renormalization group and critical phenomena. II. Phase-space cell analysis of critical behavior,” <i>Phys. Rev. B</i> <b>4</b>, 3184 (1971).</li>
+    <li>H. J. Maris and L. P. Kadanoff, “Teaching the renormalization group,” <i>Am. J. Phys.</i> <b>46</b>, 652 (1978). The two-coupling approximation used in the flow diagram.</li>
+    <li>N. Goldenfeld, <i>Lectures on Phase Transitions and the Renormalization Group</i>, Addison-Wesley (1992).</li>
+    <li>J. Cardy, <i>Scaling and Renormalization in Statistical Physics</i>, Cambridge University Press (1996).</li>
+  </ol>
+</section>
+
+<footer>
+  The block-spin lattices are evolved with Metropolis single-spin updates only: 3 000 sweeps at full speed to equilibrate (shown as they run), then one sweep every 0.1 s. All other curves follow from the recursion relations.
+  <p style="margin-top:14px">Lecture notes by Sang Hoon Lee. Created by Claude Opus 5.5.</p>
+</footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const C = {};
+function readColors(){
+  const cs=getComputedStyle(document.documentElement);
+  ['paper','panel','ink','muted','rule','grid','accent','crit','l16','l32','l64','l128','l256'].forEach(k=>C[k]=cs.getPropertyValue('--'+k).trim());
+}
+function hexRgb(h){ h=h.replace('#',''); if (h.length===3) h=h.split('').map(c=>c+c).join(''); const v=parseInt(h,16); return [(v>>16)&255,(v>>8)&255,v&255]; }
+const f3=(v,d=3)=>isFinite(v)?v.toFixed(d):'–';
+function linReg(xs,ys){
+  const n=xs.length; if (n<2) return null;
+  let mx=0,my=0; for (let i=0;i<n;i++){mx+=xs[i];my+=ys[i];} mx/=n; my/=n;
+  let sxx=0,sxy=0; for (let i=0;i<n;i++){ sxx+=(xs[i]-mx)**2; sxy+=(xs[i]-mx)*(ys[i]-my); }
+  const slope=sxy/sxx, icpt=my-slope*mx;
+  let se=NaN; if (n>2){ let r=0; for (let i=0;i<n;i++) r+=(ys[i]-icpt-slope*xs[i])**2; se=Math.sqrt(r/(n-2)/sxx); }
+  return {slope,icpt,se};
+}
+
+function richParts(s){ const out=[]; let i=0, buf=''; const push=(t,m)=>{ if (t) out.push({t,m}); };
+  while (i<s.length){ const ch=s[i];
+    if ((ch==='_'||ch==='^') && i+1<s.length){ push(buf,0); buf=''; const m=ch==='_'?1:2; let t;
+      if (s[i+1]==='{'){ const j=s.indexOf('}',i+2); t=s.slice(i+2,j<0?s.length:j); i=j<0?s.length:j+1; }
+      else { t=String.fromCodePoint(s.codePointAt(i+1)); i+=1+t.length; }
+      push(t,m); }
+    else { buf+=ch; i++; } }
+  push(buf,0); return out; }
+function drawRich(ctx,s,x,y){
+  const parts=richParts(String(s)); if (parts.length===1 && parts[0].m===0){ ctx.fillText(s,x,y); return; }
+  const font=ctx.font, mm=font.match(/(\d+(?:\.\d+)?)px/), px=mm?+mm[1]:11, small=font.replace(/(\d+(?:\.\d+)?)px/,(px*0.72).toFixed(1)+'px'), al=ctx.textAlign;
+  let w=0; parts.forEach(p=>{ ctx.font=p.m?small:font; p.w=ctx.measureText(p.t).width; w+=p.w; });
+  let x0= al==='center' ? x-w/2 : (al==='right'||al==='end') ? x-w : x;
+  ctx.textAlign='left';
+  parts.forEach(p=>{ ctx.font=p.m?small:font; ctx.fillText(p.t,x0,y+(p.m===1?px*0.32:p.m===2?-px*0.38:0)); x0+=p.w; });
+  ctx.textAlign=al; ctx.font=font; }
+/* ---------- plotting ---------- */
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const supNum = n => String(n).split('').map(c=>SUP[c]||c).join('');
+function niceStep(range,n){ const raw=range/n, p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p; return (f<1.5?1:f<3?2:f<7?5:10)*p; }
+function fmtTick(v,step){ const dec=Math.max(0,-Math.floor(Math.log10(step)+1e-9)); return (Math.abs(v)<step/2?0:v).toFixed(Math.min(dec,4)); }
+function plot(cv,o){
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight; if (!W||!H) return;
+  const pw_=Math.round(W*dpr), ph_=Math.round(H*dpr); if (cv.width!==pw_||cv.height!==ph_){cv.width=pw_; cv.height=ph_;}
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  const m={l:54,r:12,t:10,b:36}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+  const fx=o.logx?Math.log10:v=>v, fy=o.logy?Math.log10:v=>v;
+  const series=o.series||[];
+  let [x0,x1]=o.x||[Infinity,-Infinity];
+  if (!o.x){ series.forEach(s=>s.pts.forEach(p=>{ if (isFinite(p[0])&&(!o.logx||p[0]>0)){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);} })); }
+  let y0=Infinity,y1=-Infinity;
+  if (o.y){ [y0,y1]=o.y; }
+  else {
+    series.forEach(s=>{ if (s.noScale) return; s.pts.forEach(p=>{ const y=p[1]; if (p[0]>=x0&&p[0]<=x1&&isFinite(y)&&(!o.logy||y>0)){y0=Math.min(y0,y);y1=Math.max(y1,y);} }); });
+    if (!isFinite(y0)){ y0=o.logy?0.1:0; y1=o.logy?10:1; }
+    if (o.logy){ y0/=1.3; y1*=1.3; } else { const pad=(y1-y0||1)*0.06; y0 = o.zeroY ? Math.min(0,y0) : y0-pad; y1+=pad; }
+  }
+  if (!isFinite(x0)||!isFinite(x1)){ x0=o.logx?1:0; x1=o.logx?10:1; }
+  if (x0===x1){x0-=1;x1+=1;}
+  const X0=fx(x0),X1=fx(x1),Y0=fy(y0),Y1=fy(y1);
+  const X=v=>m.l+(fx(v)-X0)/(X1-X0)*pw, Y=v=>m.t+ph-(fy(v)-Y0)/(Y1-Y0)*ph;
+  cv._xy=(a,b)=>[X(a),Y(b)]; cv._inv = px => { const t=(px-m.l)/pw; const v=X0+t*(X1-X0); return o.logx?Math.pow(10,v):v; };
+  ctx.font='11px "Public Sans", system-ui, sans-serif'; ctx.lineWidth=1;
+  function ticks(lo,hi,log,custom){
+    if (custom) return custom.filter(v=>v>=lo*0.999&&v<=hi*1.001).map(v=>[v,(o.xfmt||String)(v)]);
+    if (log){
+      if (!(lo>0)||!isFinite(hi)) return [];
+      const a=Math.floor(Math.log10(lo)), b=Math.ceil(Math.log10(hi)), out=[];
+      if (b-a>40) return [];
+      const mults = (b-a)<=1 ? [1,1.5,2,3,5,7] : (b-a)<=2 ? [1,2,5] : [1];
+      const stepK = (b-a)>6 ? 2 : 1;
+      for (let k=a;k<=b;k+=1) if (((k%stepK)+stepK)%stepK===0) mults.forEach(mu=>{ const v=mu*Math.pow(10,k); if (v>=lo&&v<=hi) out.push([v, mu===1 ? (k>=0&&k<=3 ? String(Math.pow(10,k)) : '10'+supNum(k)) : (k>=0? String(v): String(+v.toPrecision(2)))]); });
+      return out;
+    }
+    const st=niceStep(hi-lo,5), out=[];
+    if (!(st>0)||!isFinite(lo)||!isFinite(hi)) return out;
+    for (let v=Math.ceil(lo/st)*st; v<=hi+st*1e-6; v+=st) out.push([v,fmtTick(v,st)]);
+    return out;
+  }
+  ctx.fillStyle=C.panel; ctx.fillRect(m.l,m.t,pw,ph);
+  ctx.strokeStyle=C.grid; ctx.fillStyle=C.muted;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ticks(x0,x1,o.logx,o.xticks).forEach(([v,l])=>{ const px=Math.round(X(v))+.5; ctx.beginPath(); ctx.moveTo(px,m.t); ctx.lineTo(px,m.t+ph); ctx.stroke(); ctx.fillText(l,px,m.t+ph+5); });
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  ticks(y0,y1,o.logy).forEach(([v,l])=>{ const py=Math.round(Y(v))+.5; ctx.beginPath(); ctx.moveTo(m.l,py); ctx.lineTo(m.l+pw,py); ctx.stroke(); ctx.fillText(l,m.l-6,py); });
+  ctx.strokeStyle=C.rule; ctx.strokeRect(m.l+.5,m.t+.5,pw-1,ph-1);
+  ctx.save(); ctx.beginPath(); ctx.rect(m.l,m.t,pw,ph); ctx.clip();
+  (o.vlines||[]).forEach(v=>{ if (v.x<x0||v.x>x1) return; ctx.strokeStyle=v.color; ctx.lineWidth=v.width||1; ctx.setLineDash(v.dash||[]); const px=X(v.x); ctx.beginPath(); ctx.moveTo(px,m.t); ctx.lineTo(px,m.t+ph); ctx.stroke(); ctx.setLineDash([]); if (v.label){ ctx.fillStyle=v.color; ctx.textAlign='left'; ctx.textBaseline='top'; drawRich(ctx,v.label,px+4,m.t+4); } });
+  series.forEach(s=>{
+    ctx.strokeStyle=s.color; ctx.fillStyle=s.color; ctx.lineWidth=s.width||1.6; ctx.setLineDash(s.dash||[]); ctx.globalAlpha=s.alpha||1;
+    if (s.dots){ s.pts.forEach(p=>{ if (!isFinite(p[1])||(o.logy&&p[1]<=0)) return; ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),s.r||4,0,7); ctx.fill(); }); }
+    else { ctx.beginPath(); let pen=false; s.pts.forEach(p=>{ const ok=isFinite(p[1])&&isFinite(p[0])&&(!o.logy||p[1]>0)&&(!o.logx||p[0]>0); if (!ok){pen=false;return;} const px=X(p[0]),py=Y(p[1]); if (pen) ctx.lineTo(px,py); else {ctx.moveTo(px,py); pen=true;} }); ctx.stroke(); }
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+  });
+  ctx.restore();
+  ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='bottom';
+  if (o.xlabel) drawRich(ctx,o.xlabel, m.l+pw/2, H-1);
+  if (o.ylabel){ ctx.save(); ctx.translate(11,m.t+ph/2); ctx.rotate(-Math.PI/2); ctx.textBaseline='middle'; drawRich(ctx,o.ylabel,0,0); ctx.restore(); }
+}
+
+
+
+
+
+
+/* ---------- Monte Carlo kernels ---------- */
+function mkLattice(L,kind){ const s=new Int8Array(L*L); for (let i=0;i<s.length;i++) s[i]= kind==='up'?1:kind==='down'?-1:(Math.random()<0.5?1:-1); return s; }
+function metroSweep(s,L,T,H){
+  const w=new Float64Array(18), b=1/T;
+  for (let a=0;a<2;a++) for (let n=-4;n<=4;n++){ const sp=a?1:-1, dE=2*sp*(n+H); w[a*9+n+4]= dE<=0?1:Math.exp(-b*dE); }
+  for (let par=0;par<2;par++) for (let y=0;y<L;y++){ const up=((y+L-1)%L)*L, dn=((y+1)%L)*L, row=y*L;
+    for (let x=(y+par)&1;x<L;x+=2){ const i=row+x, sp=s[i]; const n=s[row+(x+1)%L]+s[row+(x+L-1)%L]+s[up+x]+s[dn+x]; const p=w[(sp>0?9:0)+n+4]; if (p>=1||Math.random()<p) s[i]=-sp; } }
+}
+function measure(s,L,H){ let M=0, B=0; for (let y=0;y<L;y++){ const row=y*L, dn=((y+1)%L)*L; for (let x=0;x<L;x++){ const sp=s[row+x]; M+=sp; B+=sp*(s[row+(x+1)%L]+s[dn+x]); } } const N=L*L; return {m:M/N, e:(-B-H*M)/N}; }
+
+
+const TC=2/Math.log(1+Math.SQRT2), KC=Math.log(1+Math.SQRT2)/2;
+
+/* ---------- live block-spin transformation ---------- */
+const BS={t:0.05,b:3,rule:'maj',running:true,spd:0.25,lat:[],acc:null,frames:0};
+function bsReset(){
+  const L=BS.b===3?243:256; BS.L=L;
+  BS.lat=[-1,0,1].map(sg=>({sg,T:TC*(1+sg*BS.t),s:mkLattice(L,sg<0?'up':'random')}));
+  BS.acc=[0,1,2].map(()=>({nn:new Float64Array(4),m:new Float64Array(4),n:0})); BS.eq=0; BS.warm=0;
+}
+function coarse(s,L,b,rule){
+  const M=L/b, out=new Int8Array(M*M);
+  for (let Y=0;Y<M;Y++) for (let X=0;X<M;X++){
+    if (rule==='dec'){ out[Y*M+X]=s[(Y*b)*L+X*b]; continue; }
+    let sum=0; for (let dy=0;dy<b;dy++) for (let dx=0;dx<b;dx++) sum+=s[(Y*b+dy)*L+X*b+dx];
+    out[Y*M+X]= sum>0?1:sum<0?-1:(Math.random()<0.5?1:-1);
+  }
+  return out;
+}
+function nnCorr(s,L){ let a=0; for (let y=0;y<L;y++){ const r=y*L, d=((y+1)%L)*L; for (let x=0;x<L;x++){ const v=s[r+x]; a+=v*(s[r+(x+1)%L]+s[d+x]); } } return a/(2*L*L); }
+function magn(s){ let a=0; for (let i=0;i<s.length;i++) a+=s[i]; return Math.abs(a)/s.length; }
+let levels=[];
+const WARM=3000;
+function bsLevels(){ levels=BS.lat.map(l=>{ const lv=[{s:l.s,L:BS.L}]; for (let n=1;n<4;n++){ const p=lv[n-1]; lv.push({s:coarse(p.s,p.L,BS.b,BS.rule),L:p.L/BS.b}); } return lv; }); }
+function bsStep(){
+  BS.lat.forEach(l=>metroSweep(l.s,BS.L,l.T,0)); BS.eq++;
+  bsLevels();
+  if (BS.eq>2) levels.forEach((lv,c)=>{ const a=BS.acc[c]; lv.forEach((q,n)=>{ a.nn[n]+=nnCorr(q.s,q.L); a.m[n]+=magn(q.s); }); a.n++; });
+}
+const offs={};
+function drawBS(){
+  const cv=$('bs'), W=cv.clientWidth, H=cv.clientHeight; if (!W||!levels.length) return; const dpr=window.devicePixelRatio||1;
+  if (cv.width!==Math.round(W*dpr)||cv.height!==Math.round(H*dpr)){ cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+  const top=26, right=34, gap=8, cw=(W-right-2*gap)/3, ch=(H-top-2*gap)/3, sz=Math.min(cw,ch);
+  const up=hexRgb(C.panel), dn=hexRgb(C.ink);
+  ctx.font='600 13px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.ink; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ['t < 0','t = 0','t > 0'].forEach((l,c)=>drawRich(ctx,l,c*(cw+gap)+cw/2,13));
+  for (let c=0;c<3;c++) for (let n=0;n<3;n++){
+    const q=levels[c][n], key=c+'_'+n; let o=offs[key];
+    if (!o||o.c.width!==q.L){ const cc=document.createElement('canvas'); cc.width=q.L; cc.height=q.L; o=offs[key]={c:cc,img:cc.getContext('2d').createImageData(q.L,q.L)}; }
+    const d=o.img.data; for (let i=0;i<q.s.length;i++){ const col=q.s[i]>0?up:dn, k=4*i; d[k]=col[0]; d[k+1]=col[1]; d[k+2]=col[2]; d[k+3]=255; }
+    o.c.getContext('2d').putImageData(o.img,0,0);
+    const x0=c*(cw+gap)+(cw-sz)/2, y0=top+n*(ch+gap)+(ch-sz)/2;
+    ctx.imageSmoothingEnabled=false; ctx.drawImage(o.c,x0,y0,sz,sz);
+    ctx.strokeStyle=c===1?C.accent:C.rule; ctx.lineWidth=c===1?2:1; ctx.strokeRect(x0+.5,y0+.5,sz-1,sz-1);
+  }
+  ctx.fillStyle=C.crit; ctx.strokeStyle=C.crit; ctx.lineWidth=2;
+  for (let n=0;n<2;n++){ const y=top+(n+1)*(ch+gap)-gap/2, x=W-right/2; ctx.beginPath(); ctx.moveTo(x,y-22); ctx.lineTo(x,y+16); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-5,y+10); ctx.lineTo(x,y+18); ctx.lineTo(x+5,y+10); ctx.fill(); ctx.font='600 12px "Public Sans", system-ui, sans-serif'; drawRich(ctx,'R_b',x,y-30); }
+  const Ls=levels[0].slice(0,3).map(q=>q.L).join(' → ');
+  $('bsNote').innerHTML=`Columns: T = ${(1-BS.t).toFixed(2)}T<sub>c</sub>, T<sub>c</sub> and ${(1+BS.t).toFixed(2)}T<sub>c</sub>. Rows: the lattice (${Ls} spins per side) after 0, 1 and 2 transformations with b = ${BS.b} and the ${BS.rule==='maj'?'majority rule':'decimation rule'}. White is up, black is down.`;
+}
+function drawNN(){
+  const cols=[C.accent,C.ink,C.crit], ser=[];
+  BS.acc.forEach((a,c)=>{ if (!a.n) return; const pts=[0,1,2,3].map(n=>[n,a.nn[n]/a.n]); ser.push({color:cols[c],width:2,pts},{dots:true,r:4.5,color:cols[c],pts}); });
+  plot($('nnC'),{x:[-0.2,3.2],y:[0,1.02],xticks:[0,1,2,3],series:ser,xlabel:'RG steps n',ylabel:'⟨s_I s_J⟩'});
+  const r=BS.acc.map(a=>a.n?[0,1,2,3].map(n=>(a.nn[n]/a.n).toFixed(3)).join(' → '):'–');
+  $('bsRead').innerHTML=(BS.warm<WARM?`<dt>Equilibrating with Metropolis sweeps</dt><dd>${BS.warm} / ${WARM}</dd>`:'')+`<dt>t &lt; 0 (blue in the chart)</dt><dd>${r[0]}</dd><dt>t = 0 (dark)</dt><dd>${r[1]}</dd><dt>t &gt; 0 (red)</dt><dd>${r[2]}</dd><dt>Samples averaged</dt><dd>${BS.acc[0].n}</dd>`;
+}
+function loop(now){
+  if (BS.running){
+    if (BS.warm<WARM){ const t0=performance.now(); while (BS.warm<WARM && performance.now()-t0<12){ BS.lat.forEach(l=>metroSweep(l.s,BS.L,l.T,0)); BS.warm++; }
+      if (!BS.last || now-BS.last>=100){ BS.last=now; bsLevels(); drawBS(); drawNN(); } }
+    else if (!BS.last || now-BS.last>=100){ BS.last=now; bsStep(); drawBS(); BS.frames++; if (BS.frames%3===0) drawNN(); }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Kadanoff exponents ---------- */
+const KP={'2d':[2,1,1.875],'3d':[3,1/0.6297,2.4818],'mf':[4,2,3]};
+function drawK(){
+  const d=+$('kd').value, yt=+$('kyt').value, yh=+$('kyh').value;
+  const nu=1/yt, alpha=2-d/yt, Delta=yh/yt, beta=(d-yh)/yt, gamma=(2*yh-d)/yt, delta=yh/(d-yh), eta=d+2-2*yh;
+  const known={2:{α:'0',β:'1/8',γ:'7/4',δ:'15',ν:'1',η:'1/4'},3:{α:'0.111',β:'0.326',γ:'1.237',δ:'4.79',ν:'0.630',η:'0.036'},4:{α:'0',β:'1/2',γ:'1',δ:'3',ν:'1/2',η:'0'}}[d];
+  const rows=[['ν','1/y_t',nu,'ν'],['α','2 − d/y<sub>t</sub>',alpha,'α'],['β','(d − y<sub>h</sub>)/y<sub>t</sub>',beta,'β'],['γ','(2y<sub>h</sub> − d)/y<sub>t</sub>',gamma,'γ'],['δ','y<sub>h</sub>/(d − y<sub>h</sub>)',delta,'δ'],['η','d + 2 − 2y<sub>h</sub>',eta,'η'],['Δ','y<sub>h</sub>/y<sub>t</sub>',Delta,null]];
+  $('kTable').innerHTML='<thead><tr><th>Exponent</th><th>In terms of y<sub>t</sub> and y<sub>h</sub></th><th style="text-align:right">Value</th><th style="text-align:right">Known for d = '+d+'</th></tr></thead><tbody>'+
+    rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1].replace('1/y_t','1/y<sub>t</sub>')}</td><td class="num">${isFinite(r[2])?r[2].toFixed(4):'∞'}</td><td class="num">${r[3]&&known?known[r[3]]:'–'}</td></tr>`).join('')+'</tbody>';
+}
+
+/* ---------- 1D decimation ---------- */
+const R1=K=>0.5*Math.log(Math.cosh(2*K)), K0p=K=>Math.log(2*Math.sqrt(Math.cosh(2*K)));
+function cobweb(K0,R,n){ const pts=[[K0,0]]; let K=K0; for (let i=0;i<n;i++){ const q=R(K); pts.push([K,q],[q,q]); K=q; } return pts; }
+function drawD1(){
+  const K0=+$('d1K').value; $('d1Ko').textContent=K0.toFixed(2);
+  const Ks=Array.from({length:201},(_,i)=>i*0.02);
+  plot($('d1'),{x:[0,4],y:[0,4],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[4,4]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R1(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R1,12)},{dots:true,r:5,color:C.ink,pts:[[0,0]]}],xlabel:'K_1',ylabel:'K_1′'});
+  const rows=[]; let K=K0, xiPrev=NaN;
+  for (let n=0;n<8;n++){ const xi=-1/Math.log(Math.tanh(K)); rows.push(`<tr><td class="num">${n}</td><td class="num">${K.toFixed(5)}</td><td class="num">${xi<1e6?xi.toFixed(4):xi.toExponential(3)}</td><td class="num">${n?(xiPrev/xi).toFixed(4):'–'}</td></tr>`); xiPrev=xi; K=R1(K); }
+  $('d1Table').innerHTML='<thead><tr><th style="text-align:right">step n</th><th style="text-align:right">K<sub>1</sub><sup>(n)</sup></th><th style="text-align:right">ξ = −1/ln tanh K</th><th style="text-align:right">ξ<sup>(n−1)</sup>/ξ<sup>(n)</sup></th></tr></thead><tbody>'+rows.join('')+'</tbody>';
+  K=K0; let lnZ=0, wt=0.5; for (let n=0;n<60;n++){ lnZ+=wt*K0p(K); K=R1(K); wt/=2; }
+  $('d1Note').innerHTML=`Free energy from the RG offsets: ln Z/N = Σ<sub>n</sub> K<sub>0</sub><sup>(n)</sup>/2<sup>n</sup> = ${lnZ.toFixed(8)}, against the exact ln(2 cosh K<sub>1</sub>) = ${Math.log(2*Math.cosh(K0)).toFixed(8)}.`;
+}
+
+/* ---------- 2D decimation ---------- */
+const R2a=K=>0.25*Math.log(Math.cosh(4*K)), R2b=K=>0.375*Math.log(Math.cosh(4*K));
+function fixedPt(R){ let lo=0.2, hi=1.5; for (let i=0;i<100;i++){ const m=(lo+hi)/2; if (R(m)-m<0) lo=m; else hi=m; } return (lo+hi)/2; }
+const KSTAR=fixedPt(R2b);
+function drawD2(){
+  const K0=+$('d2K').value; $('d2Ko').textContent=K0.toFixed(3);
+  const mode=document.querySelector('input[name=tr]:checked').value, R=mode==='drop'?R2a:R2b;
+  const Ks=Array.from({length:241},(_,i)=>i*0.005);
+  const fp=[[0,0]]; if (mode==='k2') fp.push([KSTAR,KSTAR]);
+  plot($('d2'),{x:[0,1.2],y:[0,1.2],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[1.2,1.2]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R,14).map(p=>[p[0],Math.min(p[1],5)])},{dots:true,r:5,color:C.ink,pts:fp}],vlines:[{x:KC,color:C.l64,dash:[3,4],label:'exact K_c'}],xlabel:'K',ylabel:'K′'});
+  let K=K0; const seq=[]; for (let i=0;i<6;i++){ seq.push(K.toFixed(4)); K=R(K); if (K>50){ seq.push('→ ∞'); break; } }
+  if (mode==='drop'){
+    $('d2Read').innerHTML=`<dt>Fixed points</dt><dd>K* = 0 (stable) and ∞ (unstable)</dd><dt>Flow from the chosen K</dt><dd style="font-weight:500">${seq.join(' → ')}</dd><dt>Verdict</dt><dd>no transition at finite T (wrong)</dd>`;
+  } else {
+    const lam=1.5*Math.tanh(4*KSTAR), b=Math.SQRT2, nu=Math.log(b)/Math.log(lam);
+    $('d2Read').innerHTML=`<dt>Non-trivial fixed point K̃*</dt><dd>${KSTAR.toFixed(4)} (exact K<sub>c</sub> = ${KC.toFixed(4)})</dd><dt>Implied k<sub>B</sub>T<sub>c</sub>/J = 1/K̃*</dt><dd>${(1/KSTAR).toFixed(3)} (exact ${TC.toFixed(3)})</dd><dt>λ = dK̃′/dK̃ at K̃* = (3/2) tanh 4K̃*</dt><dd>${lam.toFixed(4)}</dd><dt>y<sub>t</sub> = ln λ / ln b with b = √2</dt><dd>${(Math.log(lam)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${nu.toFixed(4)} (exact 1)</dd><dt>Flow from the chosen K</dt><dd style="font-weight:500">${seq.join(' → ')}</dd>`;
+  }
+  const Kg=Array.from({length:201},(_,i)=>i*0.006);
+  plot($('d2c'),{x:[0,1.2],series:[{color:C.accent,width:2,pts:Kg.map(k=>[k,0.25*Math.log(Math.cosh(4*k))])},{color:C.crit,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))])},{color:C.ink,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))-0.5*Math.log(Math.cosh(2*k))])}],xlabel:'K_1',ylabel:'renormalized couplings'});
+}
+function drawDec2(){
+  const cv=$('dec2'), W=cv.clientWidth, H=cv.clientHeight; if (!W) return; const dpr=window.devicePixelRatio||1; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+  const n=5, s=Math.min(W/2,H)/(n+1), ox=(W/2-s*(n-1))/2, oy=(H-s*(n-1))/2, r=s*0.22;
+  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", system-ui, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const P=(i,j)=>[ox+i*s,oy+j*s];
+  ctx.strokeStyle=C.rule; ctx.lineWidth=1.5; ctx.beginPath(); for (let i=0;i<n;i++){ ctx.moveTo(...P(i,0)); ctx.lineTo(...P(i,n-1)); ctx.moveTo(...P(0,i)); ctx.lineTo(...P(n-1,i)); } ctx.stroke();
+  const lab={'2,1':'s₁','1,2':'s₂','3,2':'s₄','2,3':'s₃','2,2':'s₅'};
+  for (let i=0;i<n;i++) for (let j=0;j<n;j++){ const dec=(i+j)%2===0, [x,y]=P(i,j); ctx.fillStyle=dec?C.muted:C.panel; ctx.strokeStyle=C.ink; ctx.lineWidth=1.3; ctx.fillRect(x-r,y-r,2*r,2*r); ctx.strokeRect(x-r,y-r,2*r,2*r); const L=lab[i+','+j]; if (L){ ctx.fillStyle=dec?C.panel:C.ink; ctx.fillText(L,x,y); } }
+  ctx.fillStyle=C.muted; ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillText('original lattice, coupling K₁',W/4,oy-s*0.75);
+  // right: renormalized (rotated) lattice around s1..s4
+  const cx=W*0.75, cy=H/2, a=s*1.25, pts={'s₁':[cx,cy-a],'s₂':[cx-a,cy],'s₃':[cx,cy+a],'s₄':[cx+a,cy]};
+  ctx.fillStyle=C.grid; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₄']); ctx.lineTo(...pts['s₃']); ctx.lineTo(...pts['s₂']); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle=C.accent; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₄']); ctx.lineTo(...pts['s₃']); ctx.lineTo(...pts['s₂']); ctx.closePath(); ctx.stroke();
+  ctx.strokeStyle=C.crit; ctx.setLineDash([6,5]); ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₃']); ctx.moveTo(...pts['s₂']); ctx.lineTo(...pts['s₄']); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", system-ui, sans-serif`;
+  Object.entries(pts).forEach(([k,[x,y]])=>{ ctx.fillStyle=C.panel; ctx.strokeStyle=C.ink; ctx.lineWidth=1.3; ctx.fillRect(x-r,y-r,2*r,2*r); ctx.strokeRect(x-r,y-r,2*r,2*r); ctx.fillStyle=C.ink; ctx.fillText(k,x,y); });
+  ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.accent; drawRich(ctx,"K_1′",cx+a*0.62,cy-a*0.62); ctx.fillStyle=C.crit; drawRich(ctx,"K_2′",cx+a*0.18,cy-a*0.35); ctx.fillStyle=C.ink; drawRich(ctx,"K_3′",cx-a*0.32,cy+a*0.3);
+  ctx.fillStyle=C.muted; ctx.fillText('after summing out s₅',cx,oy-s*0.75);
+  ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(W*0.48,H/2); ctx.lineTo(W*0.54,H/2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(W*0.54,H/2-5); ctx.lineTo(W*0.55,H/2); ctx.lineTo(W*0.54,H/2+5); ctx.fill();
+}
+
+/* ---------- Wilson flow in (K, L) ---------- */
+const RW=(K,L)=>[2*K*K+L, K*K];
+const KS=1/3, LS=1/9; // fixed point
+const MW=[[4*KS,1],[2*KS,0]];
+const tr=MW[0][0]+MW[1][1], det=MW[0][0]*MW[1][1]-MW[0][1]*MW[1][0], disc=Math.sqrt(tr*tr-4*det), LAM1=(tr+disc)/2, LAM2=(tr-disc)/2;
+const ev=l=>{ const v=[MW[0][1], l-MW[0][0]]; const n=Math.hypot(...v); return [v[0]/n,v[1]/n]; };
+const EV1=ev(LAM1), EV2=ev(LAM2);
+function fate(K,L){ for (let i=0;i<200;i++){ [K,L]=RW(K,L); if (K+L>3) return 1; if (K+L<1e-4) return -1; } return 0; }
+let critLine=null;
+function computeCrit(){ critLine=[]; for (let i=0;i<=60;i++){ const L=i*0.45/60; let lo=0, hi=0.7; if (fate(hi,L)!==1) continue; for (let k=0;k<60;k++){ const m=(lo+hi)/2; if (fate(m,L)===1) hi=m; else lo=m; } critLine.push([(lo+hi)/2,L]); } }
+const traj=[];
+function addTraj(K,L){ const pts=[[K,L]]; for (let i=0;i<40;i++){ [K,L]=RW(K,L); pts.push([K,L]); if (K+L>2.5||K+L<1e-5) break; } traj.push(pts); drawFlow(); }
+function drawFlow(){
+  const cv=$('flow'), W=cv.clientWidth, H=cv.clientHeight; if (!W) return; const dpr=window.devicePixelRatio||1; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+  const m={l:48,r:10,t:10,b:38}, pw=W-m.l-m.r, ph=H-m.t-m.b, Kmax=0.7, Lmax=0.45, X=k=>m.l+k/Kmax*pw, Y=l=>m.t+ph-l/Lmax*ph;
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.font='11px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='top';
+  for (let k=0;k<=0.7001;k+=0.1){ ctx.beginPath(); ctx.moveTo(X(k),m.t); ctx.lineTo(X(k),m.t+ph); ctx.stroke(); ctx.fillText(k.toFixed(1),X(k),m.t+ph+5); }
+  ctx.textAlign='right'; ctx.textBaseline='middle'; for (let l=0;l<=0.4501;l+=0.1){ ctx.beginPath(); ctx.moveTo(m.l,Y(l)); ctx.lineTo(m.l+pw,Y(l)); ctx.stroke(); ctx.fillText(l.toFixed(1),m.l-6,Y(l)); }
+  ctx.strokeStyle=C.rule; ctx.strokeRect(m.l+.5,m.t+.5,pw-1,ph-1);
+  ctx.save(); ctx.beginPath(); ctx.rect(m.l,m.t,pw,ph); ctx.clip();
+  // arrows
+  ctx.strokeStyle=C.muted; ctx.fillStyle=C.muted; ctx.lineWidth=1;
+  for (let i=1;i<14;i++) for (let j=0;j<10;j++){ const K=i*Kmax/14, L=j*Lmax/10+0.012; const [K2,L2]=RW(K,L); let dx=X(K2)-X(K), dy=Y(L2)-Y(L); const len=Math.hypot(dx,dy); if (len<1e-6) continue; const s=Math.min(1,14/len); dx*=s; dy*=s; ctx.beginPath(); ctx.moveTo(X(K),Y(L)); ctx.lineTo(X(K)+dx,Y(L)+dy); ctx.stroke(); const an=Math.atan2(dy,dx); ctx.beginPath(); ctx.moveTo(X(K)+dx,Y(L)+dy); ctx.lineTo(X(K)+dx-5*Math.cos(an-0.45),Y(L)+dy-5*Math.sin(an-0.45)); ctx.lineTo(X(K)+dx-5*Math.cos(an+0.45),Y(L)+dy-5*Math.sin(an+0.45)); ctx.fill(); }
+  // critical line
+  if (critLine){ ctx.strokeStyle=C.ink; ctx.lineWidth=2.6; ctx.beginPath(); critLine.forEach((p,i)=>{ if (i) ctx.lineTo(X(p[0]),Y(p[1])); else ctx.moveTo(X(p[0]),Y(p[1])); }); ctx.stroke(); }
+  // eigen directions
+  [[EV1,C.crit],[EV2,C.l64]].forEach(([v,col])=>{ ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(X(KS-0.15*v[0]),Y(LS-0.15*v[1])); ctx.lineTo(X(KS+0.15*v[0]),Y(LS+0.15*v[1])); ctx.stroke(); ctx.setLineDash([]); });
+  // trajectories
+  traj.forEach(pts=>{ ctx.strokeStyle=C.accent; ctx.lineWidth=2; ctx.beginPath(); pts.forEach((p,i)=>{ if (i) ctx.lineTo(X(p[0]),Y(p[1])); else ctx.moveTo(X(p[0]),Y(p[1])); }); ctx.stroke(); ctx.fillStyle=C.accent; pts.forEach(p=>{ ctx.beginPath(); ctx.arc(X(p[0]),Y(p[1]),3,0,7); ctx.fill(); }); });
+  ctx.restore();
+  // fixed points
+  const star=(x,y,R,col)=>{ ctx.fillStyle=col; ctx.beginPath(); for (let k=0;k<10;k++){ const rr=k%2?R*0.45:R, an=-Math.PI/2+k*Math.PI/5; ctx.lineTo(x+rr*Math.cos(an),y+rr*Math.sin(an)); } ctx.closePath(); ctx.fill(); };
+  star(X(KS),Y(LS),9,C.crit); ctx.fillStyle=C.ink; ctx.beginPath(); ctx.arc(X(0),Y(0),6,0,7); ctx.fill();
+  ctx.fillStyle=C.ink; ctx.textAlign='left'; ctx.textBaseline='bottom'; ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillText('weak coupling (T = ∞)',X(0)+10,Y(0)-14); ctx.textAlign='right'; ctx.fillText('to strong coupling (T = 0) →',m.l+pw-6,m.t+16);
+  ctx.textAlign='left'; drawRich(ctx,'K* = (1/3, 1/9)',X(KS)+10,Y(LS)-8);
+  ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='bottom'; drawRich(ctx,'K (nearest neighbor)',m.l+pw/2,H-1);
+  ctx.save(); ctx.translate(11,m.t+ph/2); ctx.rotate(-Math.PI/2); ctx.textBaseline='middle'; drawRich(ctx,'L (next-nearest neighbor)',0,0); ctx.restore();
+  cv._inv=(px,py)=>[(px-m.l)/pw*Kmax,(m.t+ph-py)/ph*Lmax];
+  const Kc0=critLine&&critLine.length?critLine[0][0]:NaN, b=Math.SQRT2;
+  $('flRead').innerHTML=`<dt>Non-trivial fixed point (K*, L*)</dt><dd>(1/3, 1/9)</dd><dt>Eigenvalue λ<sub>1</sub> (red direction)</dt><dd>${LAM1.toFixed(4)}, relevant</dd><dt>Eigenvalue λ<sub>2</sub> (green direction)</dt><dd>${LAM2.toFixed(4)}, irrelevant</dd><dt>y<sub>t</sub> = ln λ<sub>1</sub>/ln √2</dt><dd>${(Math.log(LAM1)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${(Math.log(b)/Math.log(LAM1)).toFixed(4)} (exact 1)</dd><dt>Critical coupling on L = 0</dt><dd>K<sub>c</sub> ≈ ${f3(Kc0,4)} (exact ${KC.toFixed(4)})</dd>`;
+}
+
+/* ---------- wiring ---------- */
+$('tSel').onchange=e=>{ BS.t=+e.target.value; bsReset(); };
+$('bSel').onchange=e=>{ BS.b=+e.target.value; bsReset(); };
+$('rSel').onchange=e=>{ BS.rule=e.target.value; BS.acc.forEach(a=>{ a.nn.fill(0); a.m.fill(0); a.n=0; }); };
+$('bsRun').onclick=()=>{ BS.running=!BS.running; $('bsRun').textContent=BS.running?'Pause':'Run'; };
+$('bsReset').onclick=bsReset;
+['kd','kyt','kyh'].forEach(id=>$(id).addEventListener('input',()=>{ document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('primary')); drawK(); }));
+document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const [d,yt,yh]=KP[b.dataset.k]; $('kd').value=String(d); $('kyt').value=+yt.toFixed(4); $('kyh').value=yh; document.querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('primary',x===b)); drawK(); });
+$('d1K').addEventListener('input',drawD1);
+$('d2K').addEventListener('input',drawD2);
+document.querySelectorAll('input[name=tr]').forEach(r=>r.onchange=drawD2);
+$('flow').addEventListener('click',e=>{ const r=e.currentTarget.getBoundingClientRect(), [K,L]=e.currentTarget._inv(e.clientX-r.left,e.clientY-r.top); if (K>0&&L>=0) addTraj(K,L); });
+$('flClear').onclick=()=>{ traj.length=0; drawFlow(); };
+$('flCrit').onclick=()=>{ const Kc0=critLine[0][0]; addTraj(Kc0*0.995,0); addTraj(Kc0*1.005,0); addTraj(Kc0,0); };
+let rz=0;
+const ro=new ResizeObserver(()=>{ if (rz) return; rz=requestAnimationFrame(()=>{ rz=0; drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); }); });
+document.querySelectorAll('figure, .plate').forEach(el=>ro.observe(el));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ readColors(); drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); });
+
+readColors(); bsReset(); document.querySelector('[data-k="2d"]').click(); drawD1(); drawD2(); drawDec2(); computeCrit(); drawFlow();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
