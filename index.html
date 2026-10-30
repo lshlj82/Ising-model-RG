@@ -151,6 +151,12 @@ input.num{width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px 
 #bs{width:100%; height:auto; aspect-ratio:1/1.08; display:block}
 #flow{width:100%; height:auto; aspect-ratio:1/1; display:block; cursor:crosshair; touch-action:none}
 #dec2{width:100%; height:auto; aspect-ratio:2/1; display:block}
+/* narrow screens: grid children may shrink below their content; wide equations, tables and segmented
+   controls scroll or wrap inside their own box instead of widening the whole page */
+.hero>*, .two>*, .two2>*, .figs>*, .controls>*{min-width:0}
+@media (max-width:860px){ .hero,.two,.two2{grid-template-columns:minmax(0,1fr)} }
+.eq{max-width:100%; overflow-x:auto; vertical-align:top}
+.seg{max-width:100%; flex-wrap:wrap}
 </style>
 <script>try { const t = localStorage.getItem("netsci-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <style>
@@ -210,7 +216,7 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
   <h2>Exact renormalization in one dimension</h2>
   <p class="prose">Take b = 2 and let each block spin be the odd spin (decimation). Summing over each even spin s<sub>2</sub> between s<sub>1</sub> and s<sub>3</sub> gives 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>3</sub>)] = exp(K<sub>0</sub>′ + K<sub>1</sub>′s<sub>1</sub>s<sub>3</sub>), which only depends on s<sub>1</sub>s<sub>3</sub>. Matching the cases s<sub>1</sub> = ±s<sub>3</sub>:</p>
   <div class="eq">K<sub>1</sub>′ = ½ ln cosh(2K<sub>1</sub>),  K<sub>0</sub>′ = ln[2<span class="rad"><span class="rs">√</span><span class="rc">cosh 2K<sub>1</sub></span></span>],  Z(K<sub>1</sub>, N) = e<sup>N′K<sub>0</sub>′</sup> Z(K<sub>1</sub>′, N′)</div>
-  <p class="prose">The partition function keeps its form with half the spins and a renormalized coupling. Since K<sub>1</sub>′ &lt; K<sub>1</sub> for every K<sub>1</sub> &gt; 0, the flow runs to the stable fixed point K<sub>1</sub>* = 0 (T = ∞, non-interacting spins, ξ = 0) away from the unstable one at K<sub>1</sub>* = ∞ (T = 0, fully aligned, ξ = 0). No transition at finite T, exactly as the transfer matrix showed. Because tanh K<sub>1</sub>′ = tanh² K<sub>1</sub>, the correlation length ξ = −1/ln tanh K halves exactly at each step, and the offsets K<sub>0</sub>′ add up to the free energy.</p>
+  <p class="prose">The partition function keeps its form with half the spins and a renormalized coupling. Since K<sub>1</sub>′ &lt; K<sub>1</sub> for every K<sub>1</sub> &gt; 0, the flow runs to the stable fixed point K<sub>1</sub>* = 0 (T = ∞, non-interacting spins, ξ = 0) away from the unstable one at K<sub>1</sub>* = ∞ (T = 0, fully aligned, ξ → ∞ as T → 0<sup>+</sup>). No transition at finite T, exactly as the transfer matrix showed. Because tanh K<sub>1</sub>′ = tanh² K<sub>1</sub>, the correlation length ξ = −1/ln tanh K halves exactly at each step, and the offsets K<sub>0</sub>′ add up to the free energy.</p>
   <div class="two2">
     <figure style="margin:0"><figcaption><b>The map K<sub>1</sub>′ = ½ ln cosh 2K<sub>1</sub> and its iteration</b>Dashed: K′ = K. The red staircase follows the flow from the starting coupling.</figcaption><canvas id="d1"></canvas></figure>
     <div>
@@ -316,6 +322,20 @@ const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6
 const supNum = n => String(n).split('').map(c=>SUP[c]||c).join('');
 function niceStep(range,n){ const raw=range/n, p=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/p; return (f<1.5?1:f<3?2:f<7?5:10)*p; }
 function fmtTick(v,step){ const dec=Math.max(0,-Math.floor(Math.log10(step)+1e-9)); return (Math.abs(v)<step/2?0:v).toFixed(Math.min(dec,4)); }
+/* Axis range guard: nearly constant data (e.g. J=0 free energy) can give a round-off span like 2e-16.
+   Enforce a minimum span relative to the data magnitude; also repair inverted / non-positive log ranges. */
+const MAX_TICKS=60;
+function safeRange(a,b,log){
+  if (log){
+    if (a>0 && b>a*(1+1e-7) && isFinite(b)) return [a,b];
+    const c = a>0&&isFinite(a) ? a : (b>0&&isFinite(b) ? b : 1);
+    return [c/2, c*2];
+  }
+  const mag=Math.max(Math.abs(a),Math.abs(b));
+  if (b-a > mag*1e-7) return [a,b];
+  const c=(a+b)/2, h= mag>0 ? mag*0.06 : 1;
+  return [c-h, c+h];
+}
 function plot(cv,o){
   const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight; if (!W||!H) return;
   const pw_=Math.round(W*dpr), ph_=Math.round(H*dpr); if (cv.width!==pw_||cv.height!==ph_){cv.width=pw_; cv.height=ph_;}
@@ -333,7 +353,8 @@ function plot(cv,o){
     if (o.logy){ y0/=1.3; y1*=1.3; } else { const pad=(y1-y0||1)*0.06; y0 = o.zeroY ? Math.min(0,y0) : y0-pad; y1+=pad; }
   }
   if (!isFinite(x0)||!isFinite(x1)){ x0=o.logx?1:0; x1=o.logx?10:1; }
-  if (x0===x1){x0-=1;x1+=1;}
+  if (!isFinite(y0)||!isFinite(y1)){ y0=o.logy?0.1:0; y1=o.logy?10:1; }
+  [x0,x1]=safeRange(x0,x1,o.logx); [y0,y1]=safeRange(y0,y1,o.logy);
   const X0=fx(x0),X1=fx(x1),Y0=fy(y0),Y1=fy(y1);
   const X=v=>m.l+(fx(v)-X0)/(X1-X0)*pw, Y=v=>m.t+ph-(fy(v)-Y0)/(Y1-Y0)*ph;
   cv._xy=(a,b)=>[X(a),Y(b)]; cv._inv = px => { const t=(px-m.l)/pw; const v=X0+t*(X1-X0); return o.logx?Math.pow(10,v):v; };
@@ -350,8 +371,12 @@ function plot(cv,o){
       return out;
     }
     const st=niceStep(hi-lo,5), out=[];
-    if (!(st>0)||!isFinite(lo)||!isFinite(hi)) return out;
-    for (let v=Math.ceil(lo/st)*st; v<=hi+st*1e-6; v+=st) out.push([v,fmtTick(v,st)]);
+    if (!(st>0)||!isFinite(st)||!isFinite(lo)||!isFinite(hi)||!(hi>lo)) return out;
+    // integer tick index with a hard cap: never loop on v+=st (v+st===v when st << |v|)
+    const i0=Math.ceil(lo/st-1e-9), i1=Math.floor(hi/st+1e-6);
+    if (!isFinite(i0)||!isFinite(i1)||i1-i0>MAX_TICKS) return out;
+    let prev=-Infinity;
+    for (let i=i0;i<=i1;i++){ const v=i*st; if (!(v>prev)) break; prev=v; out.push([v,fmtTick(v,st)]); }
     return out;
   }
   ctx.fillStyle=C.panel; ctx.fillRect(m.l,m.t,pw,ph);
@@ -399,6 +424,7 @@ function bsReset(){
   const L=BS.b===3?243:256; BS.L=L;
   BS.lat=[-1,0,1].map(sg=>({sg,T:TC*(1+sg*BS.t),s:mkLattice(L,sg<0?'up':'random')}));
   BS.acc=[0,1,2].map(()=>({nn:new Float64Array(4),m:new Float64Array(4),n:0})); BS.eq=0; BS.warm=0;
+  if (C.panel){ bsLevels(); drawBS(); drawNN(); }   // show the new lattices even while paused
 }
 function coarse(s,L,b,rule){
   const M=L/b, out=new Int8Array(M*M);
@@ -449,13 +475,22 @@ function drawNN(){
   const r=BS.acc.map(a=>a.n?[0,1,2,3].map(n=>(a.nn[n]/a.n).toFixed(3)).join(' → '):'–');
   $('bsRead').innerHTML=(BS.warm<WARM?`<dt>Equilibrating with Metropolis sweeps</dt><dd>${BS.warm} / ${WARM}</dd>`:'')+`<dt>t &lt; 0 (blue in the chart)</dt><dd>${r[0]}</dd><dt>t = 0 (dark)</dt><dd>${r[1]}</dd><dt>t &gt; 0 (red)</dt><dd>${r[2]}</dd><dt>Samples averaged</dt><dd>${BS.acc[0].n}</dd>`;
 }
+/* The live lattices run only while the user wants them running (BS.running), the figure is on screen and
+   the tab is visible; otherwise no frame is scheduled. prefers-reduced-motion pauses at load and whenever it is
+   switched on later; switching it off does not auto-start (the user presses Run). */
+const RM=matchMedia('(prefers-reduced-motion: reduce)'), onScreen=new Map();
+let raf=0;
+const active=()=>BS.running && !document.hidden && (!onScreen.size || [...onScreen.values()].some(Boolean));
+function kick(){ if (!raf && active()){ BS.last=0; raf=requestAnimationFrame(loop); } }
+function setRun(on){ BS.running=on; $('bsRun').textContent=on?'Pause':'Run'; kick(); }
 function loop(now){
-  if (BS.running){
+  raf=0; if (!active()) return;
+  {
     if (BS.warm<WARM){ const t0=performance.now(); while (BS.warm<WARM && performance.now()-t0<12){ BS.lat.forEach(l=>metroSweep(l.s,BS.L,l.T,0)); BS.warm++; }
       if (!BS.last || now-BS.last>=100){ BS.last=now; bsLevels(); drawBS(); drawNN(); } }
     else if (!BS.last || now-BS.last>=100){ BS.last=now; bsStep(); drawBS(); BS.frames++; if (BS.frames%3===0) drawNN(); }
   }
-  requestAnimationFrame(loop);
+  raf=requestAnimationFrame(loop);
 }
 
 /* ---------- Kadanoff exponents ---------- */
@@ -470,14 +505,18 @@ function drawK(){
 }
 
 /* ---------- 1D decimation ---------- */
-const R1=K=>0.5*Math.log(Math.cosh(2*K)), K0p=K=>Math.log(2*Math.sqrt(Math.cosh(2*K)));
+// cosh 2K − 1 = 2 sinh²K: log1p keeps K′ ≈ K² nonzero for small K (log(cosh 2K) rounds to 0 below K ≈ 1e-8)
+const R1=K=>0.5*Math.log1p(2*Math.sinh(K)**2), K0p=K=>Math.log(2*Math.sqrt(Math.cosh(2*K)));
+// u = ln tanh K obeys u′ = 2u exactly (tanh K′ = tanh²K), so iterate u instead of K: no 0/0 in the ξ ratio
+const lnTanh=K=> K>1 ? Math.log1p(-2/(Math.exp(2*K)+1)) : Math.log(Math.tanh(K));
+const KofU=u=>0.5*Math.log1p(2*Math.exp(u)/(-Math.expm1(u)));   // K = atanh(e^u), accurate for u → 0⁻ and u → −∞
 function cobweb(K0,R,n){ const pts=[[K0,0]]; let K=K0; for (let i=0;i<n;i++){ const q=R(K); pts.push([K,q],[q,q]); K=q; } return pts; }
 function drawD1(){
   const K0=+$('d1K').value; $('d1Ko').textContent=K0.toFixed(2);
   const Ks=Array.from({length:201},(_,i)=>i*0.02);
   plot($('d1'),{x:[0,4],y:[0,4],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[4,4]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R1(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R1,12)},{dots:true,r:5,color:C.ink,pts:[[0,0]]}],xlabel:'K_1',ylabel:'K_1′'});
-  const rows=[]; let K=K0, xiPrev=NaN;
-  for (let n=0;n<8;n++){ const xi=-1/Math.log(Math.tanh(K)); rows.push(`<tr><td class="num">${n}</td><td class="num">${K.toFixed(5)}</td><td class="num">${xi<1e6?xi.toFixed(4):xi.toExponential(3)}</td><td class="num">${n?(xiPrev/xi).toFixed(4):'–'}</td></tr>`); xiPrev=xi; K=R1(K); }
+  const rows=[]; let u=lnTanh(K0), xiPrev=NaN, K;
+  for (let n=0;n<8;n++){ K=KofU(u); const xi=-1/u; rows.push(`<tr><td class="num">${n}</td><td class="num">${K>=1e-4?K.toFixed(5):K.toExponential(3)}</td><td class="num">${xi<1e6&&xi>=1e-3?xi.toFixed(4):xi.toExponential(3)}</td><td class="num">${n?(xiPrev/xi).toFixed(4):'–'}</td></tr>`); xiPrev=xi; u*=2; }
   $('d1Table').innerHTML='<thead><tr><th style="text-align:right">step n</th><th style="text-align:right">K<sub>1</sub><sup>(n)</sup></th><th style="text-align:right">ξ = −1/ln tanh K</th><th style="text-align:right">ξ<sup>(n−1)</sup>/ξ<sup>(n)</sup></th></tr></thead><tbody>'+rows.join('')+'</tbody>';
   K=K0; let lnZ=0, wt=0.5; for (let n=0;n<60;n++){ lnZ+=wt*K0p(K); K=R1(K); wt/=2; }
   $('d1Note').innerHTML=`Free energy from the RG offsets: ln Z/N = Σ<sub>n</sub> K<sub>0</sub><sup>(n)</sup>/2<sup>n</sup> = ${lnZ.toFixed(8)}, against the exact ln(2 cosh K<sub>1</sub>) = ${Math.log(2*Math.cosh(K0)).toFixed(8)}.`;
@@ -572,7 +611,11 @@ function drawFlow(){
 $('tSel').onchange=e=>{ BS.t=+e.target.value; bsReset(); };
 $('bSel').onchange=e=>{ BS.b=+e.target.value; bsReset(); };
 $('rSel').onchange=e=>{ BS.rule=e.target.value; BS.acc.forEach(a=>{ a.nn.fill(0); a.m.fill(0); a.n=0; }); };
-$('bsRun').onclick=()=>{ BS.running=!BS.running; $('bsRun').textContent=BS.running?'Pause':'Run'; };
+$('bsRun').onclick=()=>setRun(!BS.running);
+const io=new IntersectionObserver(es=>{ es.forEach(e=>onScreen.set(e.target,e.isIntersecting)); kick(); });
+[$('bs'),$('nnC')].forEach(el=>io.observe(el));
+document.addEventListener('visibilitychange',kick);
+RM.addEventListener('change',e=>{ if (e.matches) setRun(false); });
 $('bsReset').onclick=bsReset;
 ['kd','kyt','kyh'].forEach(id=>$(id).addEventListener('input',()=>{ document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('primary')); drawK(); }));
 document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const [d,yt,yh]=KP[b.dataset.k]; $('kd').value=String(d); $('kyt').value=+yt.toFixed(4); $('kyh').value=yh; document.querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('primary',x===b)); drawK(); });
@@ -588,8 +631,11 @@ document.querySelectorAll('figure, .plate').forEach(el=>ro.observe(el));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ readColors(); drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); });
 new MutationObserver(()=>{ readColors(); drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+// keyboard access to scroll containers: only boxes that actually overflow become tab stops
+function markScrollers(){ document.querySelectorAll('.eq,.tbl').forEach(el=>{ if (el.scrollWidth>el.clientWidth+1){ el.tabIndex=0; } else el.removeAttribute('tabindex'); }); }
+new ResizeObserver(()=>requestAnimationFrame(markScrollers)).observe(document.body);
 readColors(); bsReset(); document.querySelector('[data-k="2d"]').click(); drawD1(); drawD2(); drawDec2(); computeCrit(); drawFlow();
-requestAnimationFrame(loop);
+if (RM.matches) setRun(false); else kick();
 })();
 </script>
 <script>
