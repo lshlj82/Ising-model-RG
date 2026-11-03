@@ -210,6 +210,7 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
     <div class="btns"><button data-k="2d">2D Ising</button><button data-k="3d">3D Ising</button><button data-k="mf">Mean field, d = 4</button></div>
   </div>
   <div class="tbl"><table id="kTable" aria-label="Exponents from the RG eigenvalues"></table></div>
+  <p class="note" id="kNote" aria-live="polite" style="margin-top:6px"></p>
 </section>
 
 <section>
@@ -250,11 +251,13 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
   <h2>Wilson’s renormalization group</h2>
   <p class="prose">A generalized Ising model in zero field is a point K = (K<sub>1</sub>, K<sub>2</sub>, K<sub>3</sub>, …) in the space of all couplings that respect the up–down symmetry: −βE = K<sub>0</sub>N + K<sub>1</sub>Σ<sub>nn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>2</sub>Σ<sub>nnn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>3</sub>Σ<sub>□</sub>s<sub>i</sub>s<sub>j</sub>s<sub>k</sub>s<sub>l</sub> + …. The original model lies on the K<sub>1</sub>-axis, at K = 0 for T = ∞ and at infinity for T = 0. The transformation K′ = R<sub>b</sub>(K) is a recursion that generates new couplings even if they started at zero. It obeys R<sub>b<sub>2</sub></sub>R<sub>b<sub>1</sub></sub> = R<sub>b<sub>1</sub>b<sub>2</sub></sub> but has no inverse, so it forms a semigroup rather than a group.</p>
   <p class="prose">Since ξ(K′) = ξ(K)/b, a fixed point R<sub>b</sub>(K*) = K* must have ξ(K*) = 0 (the trivial weak- and strong-coupling fixed points) or ξ(K*) = ∞ (the non-trivial fixed point). Each fixed point has a basin of attraction; that of the non-trivial one, where ξ = ∞, is the critical surface. Near K*, δK′ = M(b)δK with M<sub>ij</sub> = ∂K<sub>i</sub>′/∂K<sub>j</sub>, and in its eigenbasis the scaling fields obey u<sub>i</sub>′ = λ<sub>i</sub>u<sub>i</sub> with λ<sub>i</sub> = b<sup>y<sub>i</sub></sup>. A field is relevant if y<sub>i</sub> &gt; 0 (driven away from K*), irrelevant if y<sub>i</sub> &lt; 0 (it dies out), and marginal if y<sub>i</sub> = 0. The irrelevant directions span the critical surface; the Ising model has only two relevant fields, t and h.</p>
-  <p class="prose">Below is the classic two-coupling approximation of the square-lattice decimation, keeping only the lowest order in K: K′ = 2K<sup>2</sup> + L and L′ = K<sup>2</sup>, where K is the nearest-neighbor and L the next-nearest-neighbor coupling. Click anywhere to start a trajectory.</p>
+  <p class="prose">Below is the classic two-coupling approximation of the square-lattice decimation, keeping only the lowest order in K: K′ = 2K<sup>2</sup> + L and L′ = K<sup>2</sup>, where K is the nearest-neighbor and L the next-nearest-neighbor coupling. Click anywhere in the chart, or type a starting point (K, L) next to it, to start a trajectory.</p>
   <div class="two2">
     <figure style="margin:0"><figcaption><b>RG flow in the (K, L) plane</b>Arrows: one RG step. Black curve: the critical line, the basin of attraction of the non-trivial fixed point (star). Dots at the origin and beyond the top right are the weak- and strong-coupling fixed points. The original model is the axis L = 0.</figcaption><canvas id="flow"></canvas></figure>
     <div>
       <dl class="readouts" id="flRead"></dl>
+      <div class="row" style="margin-top:10px; gap:12px; align-items:flex-end"><div class="field"><label class="lab" for="flK">Start K</label><input class="num" id="flK" type="number" min="0.001" max="0.7" step="0.001" value="0.3"></div><div class="field"><label class="lab" for="flL">Start L</label><input class="num" id="flL" type="number" min="0" max="0.45" step="0.001" value="0"></div><button id="flAdd">Add trajectory</button></div>
+      <p class="note" id="flMsg" aria-live="polite" style="margin-top:6px"></p>
       <div class="row" style="margin-top:10px"><button id="flClear">Clear trajectories</button><button id="flCrit">Start just off the critical point on L = 0</button></div>
       <p class="note" style="margin-top:10px">Trajectories that start on the critical line flow into the fixed point along the irrelevant direction. Any small offset along the relevant direction grows by λ<sub>1</sub> each step and is expelled toward one of the trivial fixed points: high temperature (toward the origin) or low temperature (toward infinity).</p>
     </div>
@@ -496,12 +499,18 @@ function loop(now){
 /* ---------- Kadanoff exponents ---------- */
 const KP={'2d':[2,1,1.875],'3d':[3,1/0.6297,2.4818],'mf':[4,2,3]};
 function drawK(){
-  const d=+$('kd').value, yt=+$('kyt').value, yh=+$('kyh').value;
+  const num=id=>{ const v=$(id).value.trim(); return v===''?NaN:+v; }, d=+$('kd').value, yt=num('kyt'), yh=num('kyh');   // an empty box is NaN, not 0
   const nu=1/yt, alpha=2-d/yt, Delta=yh/yt, beta=(d-yh)/yt, gamma=(2*yh-d)/yt, delta=yh/(d-yh), eta=d+2-2*yh;
+  /* Keep the sign and the cause of a non-finite value instead of printing every one as ∞. The y_t relations assume a
+     relevant thermal eigenvalue y_t > 0; at y_t = 0 (marginal) or below they cannot determine ν, α, β, γ, Δ at all. */
+  const ok=v=>Number.isFinite(v), inOK=ok(yt)&&ok(yh), ytOK=yt>0;
+  const fx=(v,usesYt,den,denName)=>{ if (!inOK) return '–'; if (usesYt && !ytOK) return `not determined (y<sub>t</sub> ${yt===0?'=':'&lt;'} 0)`;
+    if (ok(v)) return v.toFixed(4); const why=den===0?` (${denName} = 0)`:''; return Number.isNaN(v)?'undefined, 0/0'+why : (v>0?'+∞':'−∞')+why; };
+  $('kNote').innerHTML= !inOK ? 'Enter numbers for y<sub>t</sub> and y<sub>h</sub>.' : !ytOK ? `y<sub>t</sub> = ${yt} ${yt===0?'makes the thermal perturbation marginal':'makes the thermal perturbation irrelevant'}: the relations above assume a relevant y<sub>t</sub> &gt; 0, so they cannot fix ν, α, β, γ or Δ (a marginal case needs the next order, e.g. logarithmic corrections).` : (yh===d ? 'y<sub>h</sub> = d makes d − y<sub>h</sub> = 0: δ diverges and β = 0, a discontinuous magnetization.' : '');
   const known={2:{α:'0',β:'1/8',γ:'7/4',δ:'15',ν:'1',η:'1/4'},3:{α:'0.111',β:'0.326',γ:'1.237',δ:'4.79',ν:'0.630',η:'0.036'},4:{α:'0',β:'1/2',γ:'1',δ:'3',ν:'1/2',η:'0'}}[d];
   const rows=[['ν','1/y_t',nu,'ν'],['α','2 − d/y<sub>t</sub>',alpha,'α'],['β','(d − y<sub>h</sub>)/y<sub>t</sub>',beta,'β'],['γ','(2y<sub>h</sub> − d)/y<sub>t</sub>',gamma,'γ'],['δ','y<sub>h</sub>/(d − y<sub>h</sub>)',delta,'δ'],['η','d + 2 − 2y<sub>h</sub>',eta,'η'],['Δ','y<sub>h</sub>/y<sub>t</sub>',Delta,null]];
   $('kTable').innerHTML='<thead><tr><th>Exponent</th><th>In terms of y<sub>t</sub> and y<sub>h</sub></th><th style="text-align:right">Value</th><th style="text-align:right">Known for d = '+d+'</th></tr></thead><tbody>'+
-    rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1].replace('1/y_t','1/y<sub>t</sub>')}</td><td class="num">${isFinite(r[2])?r[2].toFixed(4):'∞'}</td><td class="num">${r[3]&&known?known[r[3]]:'–'}</td></tr>`).join('')+'</tbody>';
+    rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1].replace('1/y_t','1/y<sub>t</sub>')}</td><td class="num">${r[0]==='δ'?fx(r[2],false,d-yh,'d − y<sub>h</sub>'):r[0]==='η'?fx(r[2],false):fx(r[2],true,yt,'y<sub>t</sub>')}</td><td class="num">${r[3]&&known?known[r[3]]:'–'}</td></tr>`).join('')+'</tbody>';
 }
 
 /* ---------- 1D decimation ---------- */
@@ -610,7 +619,7 @@ function drawFlow(){
 /* ---------- wiring ---------- */
 $('tSel').onchange=e=>{ BS.t=+e.target.value; bsReset(); };
 $('bSel').onchange=e=>{ BS.b=+e.target.value; bsReset(); };
-$('rSel').onchange=e=>{ BS.rule=e.target.value; BS.acc.forEach(a=>{ a.nn.fill(0); a.m.fill(0); a.n=0; }); };
+$('rSel').onchange=e=>{ BS.rule=e.target.value; BS.acc.forEach(a=>{ a.nn.fill(0); a.m.fill(0); a.n=0; }); bsLevels(); drawBS(); drawNN(); };   // re-coarse-grain the current lattices with the new rule, also while paused
 $('bsRun').onclick=()=>setRun(!BS.running);
 const io=new IntersectionObserver(es=>{ es.forEach(e=>onScreen.set(e.target,e.isIntersecting)); kick(); });
 [$('bs'),$('nnC')].forEach(el=>io.observe(el));
@@ -623,7 +632,11 @@ $('d1K').addEventListener('input',drawD1);
 $('d2K').addEventListener('input',drawD2);
 document.querySelectorAll('input[name=tr]').forEach(r=>r.onchange=drawD2);
 $('flow').addEventListener('click',e=>{ const r=e.currentTarget.getBoundingClientRect(), [K,L]=e.currentTarget._inv(e.clientX-r.left,e.clientY-r.top); if (K>0&&L>=0) addTraj(K,L); });
-$('flClear').onclick=()=>{ traj.length=0; drawFlow(); };
+$('flClear').onclick=()=>{ traj.length=0; drawFlow(); $('flMsg').textContent='All trajectories cleared.'; };
+$('flAdd').onclick=()=>{ const K=+$('flK').value, L=+$('flL').value, ok=$('flK').value.trim()!==''&&$('flL').value.trim()!==''&&K>0&&K<=0.7&&L>=0&&L<=0.45;
+  if (!ok){ $('flMsg').textContent='Enter 0 < K ≤ 0.7 and 0 ≤ L ≤ 0.45.'; return; }
+  addTraj(K,L); const f=fate(K,L); $('flMsg').textContent=`Trajectory from (K, L) = (${K}, ${L}) added: it flows ${f>0?'to strong coupling (ordered, T < T_c)':f<0?'to the origin (disordered, T > T_c)':'into the non-trivial fixed point (critical)'}.`; };
+['flK','flL'].forEach(id=>$(id).addEventListener('keydown',e=>{ if (e.key==='Enter'){ e.preventDefault(); $('flAdd').click(); } }));
 $('flCrit').onclick=()=>{ const Kc0=critLine[0][0]; addTraj(Kc0*0.995,0); addTraj(Kc0*1.005,0); addTraj(Kc0,0); };
 let rz=0;
 const ro=new ResizeObserver(()=>{ if (rz) return; rz=requestAnimationFrame(()=>{ rz=0; drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); }); });
