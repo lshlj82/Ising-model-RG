@@ -2,6 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- lang-toggle:head -->
+<script>(function(){var l='en';try{if(localStorage.getItem('lshlj82-demo-lang')==='ko')l='ko'}catch(e){}window.LANG=l;document.documentElement.dataset.lang=l;window.tr=function(en,ko){return window.LANG==='ko'&&ko!=null?ko:en};})();</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+#langBtn{position:fixed;z-index:21;top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 60px);
+  min-width:40px;height:40px;padding:0 10px;border-radius:20px;display:grid;place-items:center;cursor:pointer;font:600 14px/1 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  background:var(--lb-bg,rgba(255,255,255,.92));color:var(--lb-fg,#1d2633);border:1px solid var(--lb-bd,rgba(20,30,45,.18));box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#langBtn:hover{border-color:currentColor}
+#langBtn:focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
+:root[data-theme="dark"] #langBtn{--lb-bg:rgba(22,28,38,.92);--lb-fg:#e8eef6;--lb-bd:rgba(255,255,255,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #langBtn{--lb-bg:rgba(22,28,38,.92);--lb-fg:#e8eef6;--lb-bd:rgba(255,255,255,.18)}}
+:root[data-lang="ko"] body{word-break:keep-all}
+:root[data-lang="ko"]{--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--serif:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--ui-font:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+:root[data-lang="ko"] body{font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+
+@media print{#langBtn{display:none}}
+</style>
+<!-- lang-toggle:head-end -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The renormalization group for the Ising model</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,9 +192,9 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
 <div class="wrap">
 
 <header>
-  <h1>The renormalization group for the Ising model</h1>
-  <p class="lede">Near T<sub>c</sub> the only length scale besides the lattice spacing is the correlation length ξ, which diverges at the critical point. Coarse-graining the lattice and rescaling it reduces ξ by a factor b, so away from T<sub>c</sub> the system flows toward one of two trivial fixed points, while at T<sub>c</sub> it stays self-similar. Turning this picture into equations justifies Widom’s scaling ansatz, the scaling form of the correlation function, and the universality of critical exponents.</p>
-  <p class="note" style="margin-top:6px">Based on lecture notes by Sang Hoon Lee for Chapter 2, following K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i> (2005). Units: k<sub>B</sub> = 1 and J = 1. <a href="#references" style="color:var(--accent)">References</a></p>
+  <h1 data-k="k1">The renormalization group for the Ising model</h1>
+  <p class="lede" data-k="k2">Near T<sub>c</sub> the only length scale besides the lattice spacing is the correlation length ξ, which diverges at the critical point. Coarse-graining the lattice and rescaling it reduces ξ by a factor b, so away from T<sub>c</sub> the system flows toward one of two trivial fixed points, while at T<sub>c</sub> it stays self-similar. Turning this picture into equations justifies Widom’s scaling ansatz, the scaling form of the correlation function, and the universality of critical exponents.</p>
+  <p class="note" style="margin-top:6px" data-k="k3">Based on lecture notes by Sang Hoon Lee for Chapter 2, following K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i> (2005). Units: k<sub>B</sub> = 1 and J = 1. <a href="#references" style="color:var(--accent)">References</a></p>
 </header>
 
 <div class="hero">
@@ -185,43 +203,43 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
     <p class="plate-note" id="bsNote"></p>
   </div>
   <div class="controls">
-    <p class="prose" style="margin:0">Three square lattices are simulated live at reduced temperatures t &lt; 0, t = 0 and t &gt; 0. Each column applies the block-spin transformation R<sub>b</sub> twice, top to bottom, and redraws every stage at the same size. The lattices update once every 0.1 seconds, with local single-spin moves (Metropolis sweeps), so domains evolve smoothly from one picture to the next. After a new start the lattices first equilibrate for 3 000 sweeps at full speed, which takes about 15 seconds; averaging begins after that. Near T<sub>c</sub> single-spin updates relax slowly, so the t = 0 column keeps coarsening for a while.</p>
+    <p class="prose" style="margin:0" data-k="k4">Three square lattices are simulated live at reduced temperatures t &lt; 0, t = 0 and t &gt; 0. Each column applies the block-spin transformation R<sub>b</sub> twice, top to bottom, and redraws every stage at the same size. The lattices update once every 0.1 seconds, with local single-spin moves (Metropolis sweeps), so domains evolve smoothly from one picture to the next. After a new start the lattices first equilibrate for 3 000 sweeps at full speed, which takes about 15 seconds; averaging begins after that. Near T<sub>c</sub> single-spin updates relax slowly, so the t = 0 column keeps coarsening for a while.</p>
     <div class="row" style="gap:16px">
       <div class="field"><label class="lab" for="tSel">|t| = |T − T<sub>c</sub>|/T<sub>c</sub></label><select id="tSel"><option value="0.02">0.02</option><option value="0.05" selected>0.05</option><option value="0.1">0.1</option><option value="0.3">0.3</option></select></div>
-      <div class="field"><label class="lab" for="bSel">Block size b</label><select id="bSel"><option value="3" selected>3 (243 → 81 → 27)</option><option value="2">2 (256 → 128 → 64)</option></select></div>
-      <div class="field"><label class="lab" for="rSel">Coarse-graining rule</label><select id="rSel"><option value="maj" selected>Majority rule</option><option value="dec">Decimation (top-left spin)</option></select></div>
+      <div class="field"><label class="lab" for="bSel" data-k="k5">Block size b</label><select id="bSel"><option value="3" selected>3 (243 → 81 → 27)</option><option value="2">2 (256 → 128 → 64)</option></select></div>
+      <div class="field"><label class="lab" for="rSel" data-k="k6">Coarse-graining rule</label><select id="rSel"><option value="maj" selected><span data-k="k7">Majority rule</span></option><option value="dec"><span data-k="k8">Decimation (top-left spin)</span></option></select></div>
     </div>
-    <div class="row"><button id="bsRun" class="primary">Pause</button><button id="bsReset">New lattices</button></div>
+    <div class="row"><button id="bsRun" class="primary">Pause</button><button id="bsReset" data-k="k9">New lattices</button></div>
     <dl class="readouts" id="bsRead"></dl>
-    <figure style="margin-top:2px"><figcaption><b>Flow of the nearest-neighbor correlation</b>⟨s<sub>I</sub>s<sub>J</sub>⟩ between neighboring block spins after n transformations, averaged over time. It rises toward 1 (the T = 0 fixed point) for t &lt; 0, falls toward 0 (T = ∞) for t &gt; 0, and changes least at t = 0.</figcaption><canvas id="nnC"></canvas></figure>
+    <figure style="margin-top:2px"><figcaption data-k="k10"><b>Flow of the nearest-neighbor correlation</b>⟨s<sub>I</sub>s<sub>J</sub>⟩ between neighboring block spins after n transformations, averaged over time. It rises toward 1 (the T = 0 fixed point) for t &lt; 0, falls toward 0 (T = ∞) for t &gt; 0, and changes least at t = 0.</figcaption><canvas id="nnC"></canvas></figure>
   </div>
 </div>
 
 <section>
-  <h2>Kadanoff’s block spins</h2>
-  <p class="prose">Since spins are correlated up to ξ, regions smaller than ξ might behave like a single block spin. The real-space renormalization procedure is to (1) divide the lattice into blocks of linear size b, each with b<sup>d</sup> spins, (2) replace each block by a single block spin s<sub>I</sub> according to a coarse-graining rule, and (3) rescale all lengths by b to restore the original lattice spacing. The rule is not unique: the majority rule s<sub>I</sub> = sign(Σ<sub>i∈I</sub> s<sub>i</sub>), with ties broken at random, or decimation, where s<sub>I</sub> takes the value of one chosen spin in the block. Either way, fluctuations on scales below b are averaged out.</p>
-  <p class="prose">Every length shrinks by b, including the correlation length, ξ′ = ξ/b. At the critical point ξ = ∞ is unchanged; away from it the system moves away from t = 0. To first order t′ = λ<sub>t</sub>(b)t, and composing two transformations, λ<sub>t</sub>(b<sub>2</sub>)λ<sub>t</sub>(b<sub>1</sub>) = λ<sub>t</sub>(b<sub>1</sub>b<sub>2</sub>) with λ<sub>t</sub>(1) = 1, has the unique solution of a power law:</p>
-  <div class="eq">t′ = b<sup>y<sub>t</sub></sup>t,  h′ = b<sup>y<sub>h</sub></sup>h,  with y<sub>t</sub>, y<sub>h</sub> &gt; 0,  and ξ ∝ |t|<sup>−ν</sup> gives y<sub>t</sub> = 1/ν</div>
-  <p class="prose">Summing first over the configurations consistent with each block-spin configuration includes all 2<sup>N</sup> microstates, and defines the renormalized energy E′ through e<sup>−βE′<sub>{s<sub>I</sub>}</sub></sup> = Σ e<sup>−βE<sub>{s<sub>i</sub>}</sub></sup>. The partition function is invariant, Z(t, h, N) = Z(t′, h′, N′) with N′ = N/b<sup>d</sup>, so the free energy per spin obeys f(t, h) = b<sup>−d</sup>f(b<sup>y<sub>t</sub></sup>t, b<sup>y<sub>h</sub></sup>h). Choosing b = |t|<sup>−1/y<sub>t</sub></sup> ∝ ξ gives exactly Widom’s form f<sub>s</sub> = |t|<sup>2−α</sup>𝓕<sub>±</sub>(h/|t|<sup>Δ</sup>) with 2 − α = νd and Δ = y<sub>h</sub>/y<sub>t</sub>. The same argument for g(r, t, h) gives d − 2 + η = 2β y<sub>t</sub>. Two RG eigenvalues fix every exponent:</p>
+  <h2 data-k="k11">Kadanoff’s block spins</h2>
+  <p class="prose" data-k="k12">Since spins are correlated up to ξ, regions smaller than ξ might behave like a single block spin. The real-space renormalization procedure is to (1) divide the lattice into blocks of linear size b, each with b<sup>d</sup> spins, (2) replace each block by a single block spin s<sub>I</sub> according to a coarse-graining rule, and (3) rescale all lengths by b to restore the original lattice spacing. The rule is not unique: the majority rule s<sub>I</sub> = sign(Σ<sub>i∈I</sub> s<sub>i</sub>), with ties broken at random, or decimation, where s<sub>I</sub> takes the value of one chosen spin in the block. Either way, fluctuations on scales below b are averaged out.</p>
+  <p class="prose" data-k="k13">Every length shrinks by b, including the correlation length, ξ′ = ξ/b. At the critical point ξ = ∞ is unchanged; away from it the system moves away from t = 0. To first order t′ = λ<sub>t</sub>(b)t, and composing two transformations, λ<sub>t</sub>(b<sub>2</sub>)λ<sub>t</sub>(b<sub>1</sub>) = λ<sub>t</sub>(b<sub>1</sub>b<sub>2</sub>) with λ<sub>t</sub>(1) = 1, has the unique solution of a power law:</p>
+  <div class="eq" data-k="k14">t′ = b<sup>y<sub>t</sub></sup>t,  h′ = b<sup>y<sub>h</sub></sup>h,  with y<sub>t</sub>, y<sub>h</sub> &gt; 0,  and ξ ∝ |t|<sup>−ν</sup> gives y<sub>t</sub> = 1/ν</div>
+  <p class="prose" data-k="k15">Summing first over the configurations consistent with each block-spin configuration includes all 2<sup>N</sup> microstates, and defines the renormalized energy E′ through e<sup>−βE′<sub>{s<sub>I</sub>}</sub></sup> = Σ e<sup>−βE<sub>{s<sub>i</sub>}</sub></sup>. The partition function is invariant, Z(t, h, N) = Z(t′, h′, N′) with N′ = N/b<sup>d</sup>, so the free energy per spin obeys f(t, h) = b<sup>−d</sup>f(b<sup>y<sub>t</sub></sup>t, b<sup>y<sub>h</sub></sup>h). Choosing b = |t|<sup>−1/y<sub>t</sub></sup> ∝ ξ gives exactly Widom’s form f<sub>s</sub> = |t|<sup>2−α</sup>𝓕<sub>±</sub>(h/|t|<sup>Δ</sup>) with 2 − α = νd and Δ = y<sub>h</sub>/y<sub>t</sub>. The same argument for g(r, t, h) gives d − 2 + η = 2β y<sub>t</sub>. Two RG eigenvalues fix every exponent:</p>
   <div class="row" style="gap:16px; align-items:flex-end; margin:8px 0">
     <div class="field"><label class="lab" for="kd">d</label><select id="kd"><option>2</option><option>3</option><option>4</option></select></div>
     <div class="field"><label class="lab" for="kyt">y<sub>t</sub> = 1/ν</label><input class="num" id="kyt" type="number" step="0.001" value="1" style="width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px solid var(--rule); border-radius:5px; background:var(--panel); color:var(--ink)"></div>
     <div class="field"><label class="lab" for="kyh">y<sub>h</sub></label><input class="num" id="kyh" type="number" step="0.001" value="1.875" style="width:90px; font:inherit; font-size:14px; padding:5px 8px; border:1px solid var(--rule); border-radius:5px; background:var(--panel); color:var(--ink)"></div>
-    <div class="btns"><button data-k="2d">2D Ising</button><button data-k="3d">3D Ising</button><button data-k="mf">Mean field, d = 4</button></div>
+    <div class="btns"><button data-kp="2d" data-k="kp2d">2D Ising</button><button data-kp="3d" data-k="kp3d">3D Ising</button><button data-kp="mf" data-k="kpmf">Mean field, d = 4</button></div>
   </div>
   <div class="tbl"><table id="kTable" aria-label="Exponents from the RG eigenvalues"></table></div>
   <p class="note" id="kNote" aria-live="polite" style="margin-top:6px"></p>
 </section>
 
 <section>
-  <h2>Exact renormalization in one dimension</h2>
-  <p class="prose">Take b = 2 and let each block spin be the odd spin (decimation). Summing over each even spin s<sub>2</sub> between s<sub>1</sub> and s<sub>3</sub> gives 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>3</sub>)] = exp(K<sub>0</sub>′ + K<sub>1</sub>′s<sub>1</sub>s<sub>3</sub>), which only depends on s<sub>1</sub>s<sub>3</sub>. Matching the cases s<sub>1</sub> = ±s<sub>3</sub>:</p>
-  <div class="eq">K<sub>1</sub>′ = ½ ln cosh(2K<sub>1</sub>),  K<sub>0</sub>′ = ln[2<span class="rad"><span class="rs">√</span><span class="rc">cosh 2K<sub>1</sub></span></span>],  Z(K<sub>1</sub>, N) = e<sup>N′K<sub>0</sub>′</sup> Z(K<sub>1</sub>′, N′)</div>
-  <p class="prose">The partition function keeps its form with half the spins and a renormalized coupling. Since K<sub>1</sub>′ &lt; K<sub>1</sub> for every K<sub>1</sub> &gt; 0, the flow runs to the stable fixed point K<sub>1</sub>* = 0 (T = ∞, non-interacting spins, ξ = 0) away from the unstable one at K<sub>1</sub>* = ∞ (T = 0, fully aligned, ξ → ∞ as T → 0<sup>+</sup>). No transition at finite T, exactly as the transfer matrix showed. Because tanh K<sub>1</sub>′ = tanh² K<sub>1</sub>, the correlation length ξ = −1/ln tanh K halves exactly at each step, and the offsets K<sub>0</sub>′ add up to the free energy.</p>
+  <h2 data-k="k16">Exact renormalization in one dimension</h2>
+  <p class="prose" data-k="k17">Take b = 2 and let each block spin be the odd spin (decimation). Summing over each even spin s<sub>2</sub> between s<sub>1</sub> and s<sub>3</sub> gives 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>3</sub>)] = exp(K<sub>0</sub>′ + K<sub>1</sub>′s<sub>1</sub>s<sub>3</sub>), which only depends on s<sub>1</sub>s<sub>3</sub>. Matching the cases s<sub>1</sub> = ±s<sub>3</sub>:</p>
+  <div class="eq" data-k="k18">K<sub>1</sub>′ = ½ ln cosh(2K<sub>1</sub>),  K<sub>0</sub>′ = ln[2<span class="rad"><span class="rs">√</span><span class="rc">cosh 2K<sub>1</sub></span></span>],  Z(K<sub>1</sub>, N) = e<sup>N′K<sub>0</sub>′</sup> Z(K<sub>1</sub>′, N′)</div>
+  <p class="prose" data-k="k19">The partition function keeps its form with half the spins and a renormalized coupling. Since K<sub>1</sub>′ &lt; K<sub>1</sub> for every K<sub>1</sub> &gt; 0, the flow runs to the stable fixed point K<sub>1</sub>* = 0 (T = ∞, non-interacting spins, ξ = 0) away from the unstable one at K<sub>1</sub>* = ∞ (T = 0, fully aligned, ξ → ∞ as T → 0<sup>+</sup>). No transition at finite T, exactly as the transfer matrix showed. Because tanh K<sub>1</sub>′ = tanh² K<sub>1</sub>, the correlation length ξ = −1/ln tanh K halves exactly at each step, and the offsets K<sub>0</sub>′ add up to the free energy.</p>
   <div class="two2">
-    <figure style="margin:0"><figcaption><b>The map K<sub>1</sub>′ = ½ ln cosh 2K<sub>1</sub> and its iteration</b>Dashed: K′ = K. The red staircase follows the flow from the starting coupling.</figcaption><canvas id="d1"></canvas></figure>
+    <figure style="margin:0"><figcaption data-k="k20"><b>The map K<sub>1</sub>′ = ½ ln cosh 2K<sub>1</sub> and its iteration</b>Dashed: K′ = K. The red staircase follows the flow from the starting coupling.</figcaption><canvas id="d1"></canvas></figure>
     <div>
-      <div class="sl"><label for="d1K">Starting coupling K<sub>1</sub> = J/k<sub>B</sub>T</label><output id="d1Ko"></output><input type="range" id="d1K" min="0.1" max="4" step="0.01" value="2.5"></div>
+      <div class="sl"><label for="d1K" data-k="k21">Starting coupling K<sub>1</sub> = J/k<sub>B</sub>T</label><output id="d1Ko"></output><input type="range" id="d1K" min="0.1" max="4" step="0.01" value="2.5"></div>
       <div class="tbl" style="margin-top:0"><table id="d1Table" aria-label="One-dimensional flow"></table></div>
       <p class="note" id="d1Note" style="margin-top:8px"></p>
     </div>
@@ -229,58 +247,58 @@ button.theme-btn svg{width:20px; height:20px; fill:none; stroke:currentColor; st
 </section>
 
 <section>
-  <h2>Decimation in two dimensions</h2>
-  <p class="prose">On the square lattice, sum out every second spin (b = <span class="rad"><span class="rs">√</span><span class="rc">2</span></span>, followed by a 45° rotation). The decimated spin s<sub>5</sub> couples to its four neighbors through 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>2</sub> + s<sub>3</sub> + s<sub>4</sub>)], which can only be rewritten exactly by generating new couplings: a nearest-neighbor coupling K<sub>1</sub>′, a next-nearest-neighbor coupling K<sub>2</sub>′ (s<sub>1</sub> and s<sub>3</sub> now interact through s<sub>5</sub>), and a four-spin coupling K<sub>3</sub>′. Solving the eight conditions gives</p>
-  <div class="eq">K<sub>1</sub>′ = ¼ ln cosh 4K<sub>1</sub>,  K<sub>2</sub>′ = ⅛ ln cosh 4K<sub>1</sub>,  K<sub>3</sub>′ = ⅛ ln cosh 4K<sub>1</sub> − ½ ln cosh 2K<sub>1</sub></div>
-  <figure style="margin:10px 0 0"><canvas id="dec2" aria-label="Decimation on the square lattice"></canvas><figcaption style="margin-top:6px">Left: the gray spins are summed out; the remaining spins s<sub>1</sub> to s<sub>4</sub> surround the decimated s<sub>5</sub>. Right: the renormalized lattice, rotated 45°, with nearest-neighbor couplings K<sub>1</sub>′ (blue), next-nearest-neighbor couplings K<sub>2</sub>′ (red, dashed) and the four-spin coupling K<sub>3</sub>′ (shaded square).</figcaption></figure>
-  <p class="prose" style="margin-top:14px">Each further step generates couplings over longer distances, so the flow lives in an infinite-dimensional coupling space and must be truncated. Odd couplings such as s<sub>i</sub>s<sub>j</sub>s<sub>k</sub> never appear because E must be symmetric under s<sub>i</sub> → −s<sub>i</sub> at H = 0. Compare two truncations:</p>
+  <h2 data-k="k22">Decimation in two dimensions</h2>
+  <p class="prose" data-k="k23">On the square lattice, sum out every second spin (b = <span class="rad"><span class="rs">√</span><span class="rc">2</span></span>, followed by a 45° rotation). The decimated spin s<sub>5</sub> couples to its four neighbors through 2 cosh[K<sub>1</sub>(s<sub>1</sub> + s<sub>2</sub> + s<sub>3</sub> + s<sub>4</sub>)], which can only be rewritten exactly by generating new couplings: a nearest-neighbor coupling K<sub>1</sub>′, a next-nearest-neighbor coupling K<sub>2</sub>′ (s<sub>1</sub> and s<sub>3</sub> now interact through s<sub>5</sub>), and a four-spin coupling K<sub>3</sub>′. Solving the eight conditions gives</p>
+  <div class="eq" data-k="k24">K<sub>1</sub>′ = ¼ ln cosh 4K<sub>1</sub>,  K<sub>2</sub>′ = ⅛ ln cosh 4K<sub>1</sub>,  K<sub>3</sub>′ = ⅛ ln cosh 4K<sub>1</sub> − ½ ln cosh 2K<sub>1</sub></div>
+  <figure style="margin:10px 0 0"><canvas id="dec2" aria-label="Decimation on the square lattice"></canvas><figcaption style="margin-top:6px" data-k="k25">Left: the gray spins are summed out; the remaining spins s<sub>1</sub> to s<sub>4</sub> surround the decimated s<sub>5</sub>. Right: the renormalized lattice, rotated 45°, with nearest-neighbor couplings K<sub>1</sub>′ (blue), next-nearest-neighbor couplings K<sub>2</sub>′ (red, dashed) and the four-spin coupling K<sub>3</sub>′ (shaded square).</figcaption></figure>
+  <p class="prose" style="margin-top:14px" data-k="k26">Each further step generates couplings over longer distances, so the flow lives in an infinite-dimensional coupling space and must be truncated. Odd couplings such as s<sub>i</sub>s<sub>j</sub>s<sub>k</sub> never appear because E must be symmetric under s<sub>i</sub> → −s<sub>i</sub> at H = 0. Compare two truncations:</p>
   <div class="row" style="gap:16px; align-items:flex-end; margin:8px 0">
-    <fieldset><legend>Truncation</legend><div class="seg"><label><input type="radio" name="tr" value="drop" checked><span>Drop all new couplings: K′ = ¼ ln cosh 4K</span></label><label><input type="radio" name="tr" value="k2"><span>Keep K<sub>2</sub>′ in K̃′ = K<sub>1</sub>′ + K<sub>2</sub>′ = ⅜ ln cosh 4K̃</span></label></div></fieldset>
+    <fieldset><legend><span data-k="k27">Truncation</span></legend><div class="seg"><label><input type="radio" name="tr" value="drop" checked><span data-k="k28"><span>Drop all new couplings: K′ = ¼ ln cosh 4K</span></span></label><label><input type="radio" name="tr" value="k2"><span data-k="k29"><span>Keep K<sub>2</sub>′ in K̃′ = K<sub>1</sub>′ + K<sub>2</sub>′ = ⅜ ln cosh 4K̃</span></span></label></div></fieldset>
   </div>
   <div class="two2">
-    <figure style="margin:0"><figcaption><b>The truncated map and its fixed points</b>Dashed: K′ = K. Dots: fixed points. The staircase starts from the chosen K.</figcaption><canvas id="d2"></canvas></figure>
+    <figure style="margin:0"><figcaption data-k="k30"><b>The truncated map and its fixed points</b>Dashed: K′ = K. Dots: fixed points. The staircase starts from the chosen K.</figcaption><canvas id="d2"></canvas></figure>
     <div>
-      <div class="sl"><label for="d2K">Starting coupling K</label><output id="d2Ko"></output><input type="range" id="d2K" min="0.05" max="1.2" step="0.001" value="0.55"></div>
+      <div class="sl"><label for="d2K" data-k="k31">Starting coupling K</label><output id="d2Ko"></output><input type="range" id="d2K" min="0.05" max="1.2" step="0.001" value="0.55"></div>
       <dl class="readouts" id="d2Read"></dl>
-      <figure style="margin-top:12px"><figcaption><b>The generated couplings against K<sub>1</sub></b>K<sub>1</sub>′ (blue), K<sub>2</sub>′ (red) and K<sub>3</sub>′ (dark). Near the fixed point (K ≈ 0.5) K<sub>3</sub>′ is much smaller than the other two, which is why it is dropped.</figcaption><canvas id="d2c"></canvas></figure>
+      <figure style="margin-top:12px"><figcaption data-k="k32"><b>The generated couplings against K<sub>1</sub></b>K<sub>1</sub>′ (blue), K<sub>2</sub>′ (red) and K<sub>3</sub>′ (dark). Near the fixed point (K ≈ 0.5) K<sub>3</sub>′ is much smaller than the other two, which is why it is dropped.</figcaption><canvas id="d2c"></canvas></figure>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>Wilson’s renormalization group</h2>
-  <p class="prose">A generalized Ising model in zero field is a point K = (K<sub>1</sub>, K<sub>2</sub>, K<sub>3</sub>, …) in the space of all couplings that respect the up–down symmetry: −βE = K<sub>0</sub>N + K<sub>1</sub>Σ<sub>nn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>2</sub>Σ<sub>nnn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>3</sub>Σ<sub>□</sub>s<sub>i</sub>s<sub>j</sub>s<sub>k</sub>s<sub>l</sub> + …. The original model lies on the K<sub>1</sub>-axis, at K = 0 for T = ∞ and at infinity for T = 0. The transformation K′ = R<sub>b</sub>(K) is a recursion that generates new couplings even if they started at zero. It obeys R<sub>b<sub>2</sub></sub>R<sub>b<sub>1</sub></sub> = R<sub>b<sub>1</sub>b<sub>2</sub></sub> but has no inverse, so it forms a semigroup rather than a group.</p>
-  <p class="prose">Since ξ(K′) = ξ(K)/b, a fixed point R<sub>b</sub>(K*) = K* must have ξ(K*) = 0 (the trivial weak- and strong-coupling fixed points) or ξ(K*) = ∞ (the non-trivial fixed point). Each fixed point has a basin of attraction; that of the non-trivial one, where ξ = ∞, is the critical surface. Near K*, δK′ = M(b)δK with M<sub>ij</sub> = ∂K<sub>i</sub>′/∂K<sub>j</sub>, and in its eigenbasis the scaling fields obey u<sub>i</sub>′ = λ<sub>i</sub>u<sub>i</sub> with λ<sub>i</sub> = b<sup>y<sub>i</sub></sup>. A field is relevant if y<sub>i</sub> &gt; 0 (driven away from K*), irrelevant if y<sub>i</sub> &lt; 0 (it dies out), and marginal if y<sub>i</sub> = 0. The irrelevant directions span the critical surface; the Ising model has only two relevant fields, t and h.</p>
-  <p class="prose">Below is the classic two-coupling approximation of the square-lattice decimation, keeping only the lowest order in K: K′ = 2K<sup>2</sup> + L and L′ = K<sup>2</sup>, where K is the nearest-neighbor and L the next-nearest-neighbor coupling. Click anywhere in the chart, or type a starting point (K, L) next to it, to start a trajectory.</p>
+  <h2 data-k="k33">Wilson’s renormalization group</h2>
+  <p class="prose" data-k="k34">A generalized Ising model in zero field is a point K = (K<sub>1</sub>, K<sub>2</sub>, K<sub>3</sub>, …) in the space of all couplings that respect the up–down symmetry: −βE = K<sub>0</sub>N + K<sub>1</sub>Σ<sub>nn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>2</sub>Σ<sub>nnn</sub>s<sub>i</sub>s<sub>j</sub> + K<sub>3</sub>Σ<sub>□</sub>s<sub>i</sub>s<sub>j</sub>s<sub>k</sub>s<sub>l</sub> + …. The original model lies on the K<sub>1</sub>-axis, at K = 0 for T = ∞ and at infinity for T = 0. The transformation K′ = R<sub>b</sub>(K) is a recursion that generates new couplings even if they started at zero. It obeys R<sub>b<sub>2</sub></sub>R<sub>b<sub>1</sub></sub> = R<sub>b<sub>1</sub>b<sub>2</sub></sub> but has no inverse, so it forms a semigroup rather than a group.</p>
+  <p class="prose" data-k="k35">Since ξ(K′) = ξ(K)/b, a fixed point R<sub>b</sub>(K*) = K* must have ξ(K*) = 0 (the trivial weak- and strong-coupling fixed points) or ξ(K*) = ∞ (the non-trivial fixed point). Each fixed point has a basin of attraction; that of the non-trivial one, where ξ = ∞, is the critical surface. Near K*, δK′ = M(b)δK with M<sub>ij</sub> = ∂K<sub>i</sub>′/∂K<sub>j</sub>, and in its eigenbasis the scaling fields obey u<sub>i</sub>′ = λ<sub>i</sub>u<sub>i</sub> with λ<sub>i</sub> = b<sup>y<sub>i</sub></sup>. A field is relevant if y<sub>i</sub> &gt; 0 (driven away from K*), irrelevant if y<sub>i</sub> &lt; 0 (it dies out), and marginal if y<sub>i</sub> = 0. The irrelevant directions span the critical surface; the Ising model has only two relevant fields, t and h.</p>
+  <p class="prose" data-k="k36">Below is the classic two-coupling approximation of the square-lattice decimation, keeping only the lowest order in K: K′ = 2K<sup>2</sup> + L and L′ = K<sup>2</sup>, where K is the nearest-neighbor and L the next-nearest-neighbor coupling. Click anywhere in the chart, or type a starting point (K, L) next to it, to start a trajectory.</p>
   <div class="two2">
-    <figure style="margin:0"><figcaption><b>RG flow in the (K, L) plane</b>Arrows: one RG step. Black curve: the critical line, the basin of attraction of the non-trivial fixed point (star). Dots at the origin and beyond the top right are the weak- and strong-coupling fixed points. The original model is the axis L = 0.</figcaption><canvas id="flow"></canvas></figure>
+    <figure style="margin:0"><figcaption data-k="k37"><b>RG flow in the (K, L) plane</b>Arrows: one RG step. Black curve: the critical line, the basin of attraction of the non-trivial fixed point (star). Dots at the origin and beyond the top right are the weak- and strong-coupling fixed points. The original model is the axis L = 0.</figcaption><canvas id="flow"></canvas></figure>
     <div>
       <dl class="readouts" id="flRead"></dl>
-      <div class="row" style="margin-top:10px; gap:12px; align-items:flex-end"><div class="field"><label class="lab" for="flK">Start K</label><input class="num" id="flK" type="number" min="0.001" max="0.7" step="0.001" value="0.3"></div><div class="field"><label class="lab" for="flL">Start L</label><input class="num" id="flL" type="number" min="0" max="0.45" step="0.001" value="0"></div><button id="flAdd">Add trajectory</button></div>
+      <div class="row" style="margin-top:10px; gap:12px; align-items:flex-end"><div class="field"><label class="lab" for="flK" data-k="k38">Start K</label><input class="num" id="flK" type="number" min="0.001" max="0.7" step="0.001" value="0.3"></div><div class="field"><label class="lab" for="flL" data-k="k39">Start L</label><input class="num" id="flL" type="number" min="0" max="0.45" step="0.001" value="0"></div><button id="flAdd" data-k="k40">Add trajectory</button></div>
       <p class="note" id="flMsg" aria-live="polite" style="margin-top:6px"></p>
-      <div class="row" style="margin-top:10px"><button id="flClear">Clear trajectories</button><button id="flCrit">Start just off the critical point on L = 0</button></div>
-      <p class="note" style="margin-top:10px">Trajectories that start on the critical line flow into the fixed point along the irrelevant direction. Any small offset along the relevant direction grows by λ<sub>1</sub> each step and is expelled toward one of the trivial fixed points: high temperature (toward the origin) or low temperature (toward infinity).</p>
+      <div class="row" style="margin-top:10px"><button id="flClear" data-k="k41">Clear trajectories</button><button id="flCrit" data-k="k42">Start just off the critical point on L = 0</button></div>
+      <p class="note" style="margin-top:10px" data-k="k43">Trajectories that start on the critical line flow into the fixed point along the irrelevant direction. Any small offset along the relevant direction grows by λ<sub>1</sub> each step and is expelled toward one of the trivial fixed points: high temperature (toward the origin) or low temperature (toward infinity).</p>
     </div>
   </div>
-  <p class="prose" style="margin-top:18px">Apart from the constant factor e<sup>N′K<sub>0</sub>′</sup>, Z is invariant, so the singular part of the free energy obeys f<sub>s</sub>(K) = b<sup>−d</sup>f<sub>s</sub>(K′). Written in scaling fields after n steps, f<sub>s</sub>(t, h, u<sub>3</sub>, …) = b<sup>−nd</sup>f<sub>s</sub>(b<sup>ny<sub>t</sub></sup>t, b<sup>ny<sub>h</sub></sup>h, b<sup>ny<sub>3</sub></sup>u<sub>3</sub>, …). The irrelevant fields vanish as n → ∞, and choosing b<sup>ny<sub>t</sub></sup> = |t|<sup>−1</sup> gives f<sub>s</sub> = |t|<sup>d/y<sub>t</sub></sup>𝓕<sub>±</sub>(h/|t|<sup>y<sub>h</sub>/y<sub>t</sub></sup>): Widom’s ansatz, with 2 − α = d/y<sub>t</sub> = dν and Δ = y<sub>h</sub>/y<sub>t</sub>. Any model whose couplings flow to the same fixed point shares its y<sub>t</sub> and y<sub>h</sub>, and therefore its exponents. That is universality.</p>
+  <p class="prose" style="margin-top:18px" data-k="k44">Apart from the constant factor e<sup>N′K<sub>0</sub>′</sup>, Z is invariant, so the singular part of the free energy obeys f<sub>s</sub>(K) = b<sup>−d</sup>f<sub>s</sub>(K′). Written in scaling fields after n steps, f<sub>s</sub>(t, h, u<sub>3</sub>, …) = b<sup>−nd</sup>f<sub>s</sub>(b<sup>ny<sub>t</sub></sup>t, b<sup>ny<sub>h</sub></sup>h, b<sup>ny<sub>3</sub></sup>u<sub>3</sub>, …). The irrelevant fields vanish as n → ∞, and choosing b<sup>ny<sub>t</sub></sup> = |t|<sup>−1</sup> gives f<sub>s</sub> = |t|<sup>d/y<sub>t</sub></sup>𝓕<sub>±</sub>(h/|t|<sup>y<sub>h</sub>/y<sub>t</sub></sup>): Widom’s ansatz, with 2 − α = d/y<sub>t</sub> = dν and Δ = y<sub>h</sub>/y<sub>t</sub>. Any model whose couplings flow to the same fixed point shares its y<sub>t</sub> and y<sub>h</sub>, and therefore its exponents. That is universality.</p>
 </section>
 
 <section id="references">
-  <h2>References</h2>
-  <div class="keyref"><p class="prose" style="margin:0"><b>Key reference.</b> K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i>, Imperial College Press, London (2005), Chapter 2.</p></div>
+  <h2 data-k="k45">References</h2>
+  <div class="keyref"><p class="prose" style="margin:0" data-k="k46"><b>Key reference.</b> K. Christensen and N. R. Moloney, <i>Complexity and Criticality</i>, Imperial College Press, London (2005), Chapter 2.</p></div>
   <ol class="refs">
-    <li>L. P. Kadanoff, “Scaling laws for Ising models near T<sub>c</sub>,” <i>Physics</i> <b>2</b>, 263 (1966).</li>
-    <li>K. G. Wilson, “Renormalization group and critical phenomena. I. Renormalization group and the Kadanoff scaling picture,” <i>Phys. Rev. B</i> <b>4</b>, 3174 (1971).</li>
-    <li>K. G. Wilson, “Renormalization group and critical phenomena. II. Phase-space cell analysis of critical behavior,” <i>Phys. Rev. B</i> <b>4</b>, 3184 (1971).</li>
-    <li>H. J. Maris and L. P. Kadanoff, “Teaching the renormalization group,” <i>Am. J. Phys.</i> <b>46</b>, 652 (1978). The two-coupling approximation used in the flow diagram.</li>
-    <li>N. Goldenfeld, <i>Lectures on Phase Transitions and the Renormalization Group</i>, Addison-Wesley (1992).</li>
-    <li>J. Cardy, <i>Scaling and Renormalization in Statistical Physics</i>, Cambridge University Press (1996).</li>
+    <li data-k="k47">L. P. Kadanoff, “Scaling laws for Ising models near T<sub>c</sub>,” <i>Physics</i> <b>2</b>, 263 (1966).</li>
+    <li data-k="k48">K. G. Wilson, “Renormalization group and critical phenomena. I. Renormalization group and the Kadanoff scaling picture,” <i>Phys. Rev. B</i> <b>4</b>, 3174 (1971).</li>
+    <li data-k="k49">K. G. Wilson, “Renormalization group and critical phenomena. II. Phase-space cell analysis of critical behavior,” <i>Phys. Rev. B</i> <b>4</b>, 3184 (1971).</li>
+    <li data-k="k50">H. J. Maris and L. P. Kadanoff, “Teaching the renormalization group,” <i>Am. J. Phys.</i> <b>46</b>, 652 (1978). The two-coupling approximation used in the flow diagram.</li>
+    <li data-k="k51">N. Goldenfeld, <i>Lectures on Phase Transitions and the Renormalization Group</i>, Addison-Wesley (1992).</li>
+    <li data-k="k52">J. Cardy, <i>Scaling and Renormalization in Statistical Physics</i>, Cambridge University Press (1996).</li>
   </ol>
 </section>
 
 <footer>
-  The block-spin lattices are evolved with Metropolis single-spin updates only: 3 000 sweeps at full speed to equilibrate (shown as they run), then one sweep every 0.1 s. All other curves follow from the recursion relations.
-  <p style="margin-top:14px">Lecture notes by Sang Hoon Lee. Created by Claude Opus 5.5.</p>
+  <span data-k="k53">The block-spin lattices are evolved with Metropolis single-spin updates only: 3 000 sweeps at full speed to equilibrate (shown as they run), then one sweep every 0.1 s. All other curves follow from the recursion relations.</span>
+  <p style="margin-top:14px" data-k="k54">Lecture notes by Sang Hoon Lee. Created by Claude Opus 5.5.</p>
 </footer>
 </div>
 
@@ -361,7 +379,7 @@ function plot(cv,o){
   const X0=fx(x0),X1=fx(x1),Y0=fy(y0),Y1=fy(y1);
   const X=v=>m.l+(fx(v)-X0)/(X1-X0)*pw, Y=v=>m.t+ph-(fy(v)-Y0)/(Y1-Y0)*ph;
   cv._xy=(a,b)=>[X(a),Y(b)]; cv._inv = px => { const t=(px-m.l)/pw; const v=X0+t*(X1-X0); return o.logx?Math.pow(10,v):v; };
-  ctx.font='11px "Public Sans", system-ui, sans-serif'; ctx.lineWidth=1;
+  ctx.font='11px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.lineWidth=1;
   function ticks(lo,hi,log,custom){
     if (custom) return custom.filter(v=>v>=lo*0.999&&v<=hi*1.001).map(v=>[v,(o.xfmt||String)(v)]);
     if (log){
@@ -455,7 +473,7 @@ function drawBS(){
   const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
   const top=26, right=34, gap=8, cw=(W-right-2*gap)/3, ch=(H-top-2*gap)/3, sz=Math.min(cw,ch);
   const up=hexRgb(C.panel), dn=hexRgb(C.ink);
-  ctx.font='600 13px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.ink; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='600 13px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.fillStyle=C.ink; ctx.textAlign='center'; ctx.textBaseline='middle';
   ['t < 0','t = 0','t > 0'].forEach((l,c)=>drawRich(ctx,l,c*(cw+gap)+cw/2,13));
   for (let c=0;c<3;c++) for (let n=0;n<3;n++){
     const q=levels[c][n], key=c+'_'+n; let o=offs[key];
@@ -467,16 +485,16 @@ function drawBS(){
     ctx.strokeStyle=c===1?C.accent:C.rule; ctx.lineWidth=c===1?2:1; ctx.strokeRect(x0+.5,y0+.5,sz-1,sz-1);
   }
   ctx.fillStyle=C.crit; ctx.strokeStyle=C.crit; ctx.lineWidth=2;
-  for (let n=0;n<2;n++){ const y=top+(n+1)*(ch+gap)-gap/2, x=W-right/2; ctx.beginPath(); ctx.moveTo(x,y-22); ctx.lineTo(x,y+16); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-5,y+10); ctx.lineTo(x,y+18); ctx.lineTo(x+5,y+10); ctx.fill(); ctx.font='600 12px "Public Sans", system-ui, sans-serif'; drawRich(ctx,'R_b',x,y-30); }
+  for (let n=0;n<2;n++){ const y=top+(n+1)*(ch+gap)-gap/2, x=W-right/2; ctx.beginPath(); ctx.moveTo(x,y-22); ctx.lineTo(x,y+16); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-5,y+10); ctx.lineTo(x,y+18); ctx.lineTo(x+5,y+10); ctx.fill(); ctx.font='600 12px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; drawRich(ctx,'R_b',x,y-30); }
   const Ls=levels[0].slice(0,3).map(q=>q.L).join(' → ');
-  $('bsNote').innerHTML=`Columns: T = ${(1-BS.t).toFixed(2)}T<sub>c</sub>, T<sub>c</sub> and ${(1+BS.t).toFixed(2)}T<sub>c</sub>. Rows: the lattice (${Ls} spins per side) after 0, 1 and 2 transformations with b = ${BS.b} and the ${BS.rule==='maj'?'majority rule':'decimation rule'}. White is up, black is down.`;
+  $('bsNote').innerHTML=tr(`Columns: T = ${(1-BS.t).toFixed(2)}T<sub>c</sub>, T<sub>c</sub> and ${(1+BS.t).toFixed(2)}T<sub>c</sub>. Rows: the lattice (${Ls} spins per side) after 0, 1 and 2 transformations with b = ${BS.b} and the ${BS.rule==='maj'?'majority rule':'decimation rule'}. White is up, black is down.`,`열: T = ${(1-BS.t).toFixed(2)}T<sub>c</sub>, T<sub>c</sub>, ${(1+BS.t).toFixed(2)}T<sub>c</sub>. 행: b = ${BS.b}와 ${BS.rule==='maj'?'다수결 규칙':'솎아내기 규칙'}으로 0, 1, 2번 변환한 뒤의 격자(한 변에 스핀 ${Ls}개). 흰색은 위, 검은색은 아래입니다.`);
 }
 function drawNN(){
   const cols=[C.accent,C.ink,C.crit], ser=[];
   BS.acc.forEach((a,c)=>{ if (!a.n) return; const pts=[0,1,2,3].map(n=>[n,a.nn[n]/a.n]); ser.push({color:cols[c],width:2,pts},{dots:true,r:4.5,color:cols[c],pts}); });
-  plot($('nnC'),{x:[-0.2,3.2],y:[0,1.02],xticks:[0,1,2,3],series:ser,xlabel:'RG steps n',ylabel:'⟨s_I s_J⟩'});
+  plot($('nnC'),{x:[-0.2,3.2],y:[0,1.02],xticks:[0,1,2,3],series:ser,xlabel:tr('RG steps n','RG 단계 n'),ylabel:'⟨s_I s_J⟩'});
   const r=BS.acc.map(a=>a.n?[0,1,2,3].map(n=>(a.nn[n]/a.n).toFixed(3)).join(' → '):'–');
-  $('bsRead').innerHTML=(BS.warm<WARM?`<dt>Equilibrating with Metropolis sweeps</dt><dd>${BS.warm} / ${WARM}</dd>`:'')+`<dt>t &lt; 0 (blue in the chart)</dt><dd>${r[0]}</dd><dt>t = 0 (dark)</dt><dd>${r[1]}</dd><dt>t &gt; 0 (red)</dt><dd>${r[2]}</dd><dt>Samples averaged</dt><dd>${BS.acc[0].n}</dd>`;
+  $('bsRead').innerHTML=(BS.warm<WARM?`<dt>${tr('Equilibrating with Metropolis sweeps','메트로폴리스 스윕으로 평형화 중')}</dt><dd>${BS.warm} / ${WARM}</dd>`:'')+`<dt>${tr('t &lt; 0 (blue in the chart)','t &lt; 0 (그래프의 파랑)')}</dt><dd>${r[0]}</dd><dt>${tr('t = 0 (dark)','t = 0 (진한 색)')}</dt><dd>${r[1]}</dd><dt>${tr('t &gt; 0 (red)','t &gt; 0 (빨강)')}</dt><dd>${r[2]}</dd><dt>${tr('Samples averaged','평균한 표본 수')}</dt><dd>${BS.acc[0].n}</dd>`;
 }
 /* The live lattices run only while the user wants them running (BS.running), the figure is on screen and
    the tab is visible; otherwise no frame is scheduled. prefers-reduced-motion pauses at load and whenever it is
@@ -485,7 +503,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)'), onScreen=new Map();
 let raf=0;
 const active=()=>BS.running && !document.hidden && (!onScreen.size || [...onScreen.values()].some(Boolean));
 function kick(){ if (!raf && active()){ BS.last=0; raf=requestAnimationFrame(loop); } }
-function setRun(on){ BS.running=on; $('bsRun').textContent=on?'Pause':'Run'; kick(); }
+function setRun(on){ BS.running=on; $('bsRun').textContent=on?tr('Pause','일시 정지'):tr('Run','실행'); kick(); }
 function loop(now){
   raf=0; if (!active()) return;
   {
@@ -504,12 +522,12 @@ function drawK(){
   /* Keep the sign and the cause of a non-finite value instead of printing every one as ∞. The y_t relations assume a
      relevant thermal eigenvalue y_t > 0; at y_t = 0 (marginal) or below they cannot determine ν, α, β, γ, Δ at all. */
   const ok=v=>Number.isFinite(v), inOK=ok(yt)&&ok(yh), ytOK=yt>0;
-  const fx=(v,usesYt,den,denName)=>{ if (!inOK) return '–'; if (usesYt && !ytOK) return `not determined (y<sub>t</sub> ${yt===0?'=':'&lt;'} 0)`;
-    if (ok(v)) return v.toFixed(4); const why=den===0?` (${denName} = 0)`:''; return Number.isNaN(v)?'undefined, 0/0'+why : (v>0?'+∞':'−∞')+why; };
-  $('kNote').innerHTML= !inOK ? 'Enter numbers for y<sub>t</sub> and y<sub>h</sub>.' : !ytOK ? `y<sub>t</sub> = ${yt} ${yt===0?'makes the thermal perturbation marginal':'makes the thermal perturbation irrelevant'}: the relations above assume a relevant y<sub>t</sub> &gt; 0, so they cannot fix ν, α, β, γ or Δ (a marginal case needs the next order, e.g. logarithmic corrections).` : (yh===d ? 'y<sub>h</sub> = d makes d − y<sub>h</sub> = 0: δ diverges and β = 0, a discontinuous magnetization.' : '');
+  const fx=(v,usesYt,den,denName)=>{ if (!inOK) return '–'; if (usesYt && !ytOK) return tr('not determined','결정되지 않음')+` (y<sub>t</sub> ${yt===0?'=':'&lt;'} 0)`;
+    if (ok(v)) return v.toFixed(4); const why=den===0?` (${denName} = 0)`:''; return Number.isNaN(v)?tr('undefined, 0/0','정의되지 않음, 0/0')+why : (v>0?'+∞':'−∞')+why; };
+  $('kNote').innerHTML= !inOK ? tr('Enter numbers for y<sub>t</sub> and y<sub>h</sub>.','y<sub>t</sub>와 y<sub>h</sub>에 숫자를 입력하세요.') : !ytOK ? tr(`y<sub>t</sub> = ${yt} ${yt===0?'makes the thermal perturbation marginal':'makes the thermal perturbation irrelevant'}: the relations above assume a relevant y<sub>t</sub> &gt; 0, so they cannot fix ν, α, β, γ or Δ (a marginal case needs the next order, e.g. logarithmic corrections).`,`y<sub>t</sub> = ${yt}이면 열적 섭동이 ${yt===0?'경계적':'무관'}입니다: 위의 관계식은 유관한 y<sub>t</sub> &gt; 0을 가정하므로 ν, α, β, γ, Δ를 정할 수 없습니다 (경계적인 경우에는 로그 보정 같은 다음 차수가 필요합니다).`) : (yh===d ? tr('y<sub>h</sub> = d makes d − y<sub>h</sub> = 0: δ diverges and β = 0, a discontinuous magnetization.','y<sub>h</sub> = d이면 d − y<sub>h</sub> = 0입니다: δ가 발산하고 β = 0으로, 불연속적인 자화입니다.') : '');
   const known={2:{α:'0',β:'1/8',γ:'7/4',δ:'15',ν:'1',η:'1/4'},3:{α:'0.111',β:'0.326',γ:'1.237',δ:'4.79',ν:'0.630',η:'0.036'},4:{α:'0',β:'1/2',γ:'1',δ:'3',ν:'1/2',η:'0'}}[d];
   const rows=[['ν','1/y_t',nu,'ν'],['α','2 − d/y<sub>t</sub>',alpha,'α'],['β','(d − y<sub>h</sub>)/y<sub>t</sub>',beta,'β'],['γ','(2y<sub>h</sub> − d)/y<sub>t</sub>',gamma,'γ'],['δ','y<sub>h</sub>/(d − y<sub>h</sub>)',delta,'δ'],['η','d + 2 − 2y<sub>h</sub>',eta,'η'],['Δ','y<sub>h</sub>/y<sub>t</sub>',Delta,null]];
-  $('kTable').innerHTML='<thead><tr><th>Exponent</th><th>In terms of y<sub>t</sub> and y<sub>h</sub></th><th style="text-align:right">Value</th><th style="text-align:right">Known for d = '+d+'</th></tr></thead><tbody>'+
+  $('kTable').innerHTML='<thead><tr><th>'+tr('Exponent','지수')+'</th><th>'+tr('In terms of y<sub>t</sub> and y<sub>h</sub>','y<sub>t</sub>와 y<sub>h</sub>로 나타내면')+'</th><th style="text-align:right">'+tr('Value','값')+'</th><th style="text-align:right">'+tr('Known for d = '+d,'d = '+d+'의 알려진 값')+'</th></tr></thead><tbody>'+
     rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1].replace('1/y_t','1/y<sub>t</sub>')}</td><td class="num">${r[0]==='δ'?fx(r[2],false,d-yh,'d − y<sub>h</sub>'):r[0]==='η'?fx(r[2],false):fx(r[2],true,yt,'y<sub>t</sub>')}</td><td class="num">${r[3]&&known?known[r[3]]:'–'}</td></tr>`).join('')+'</tbody>';
 }
 
@@ -526,9 +544,9 @@ function drawD1(){
   plot($('d1'),{x:[0,4],y:[0,4],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[4,4]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R1(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R1,12)},{dots:true,r:5,color:C.ink,pts:[[0,0]]}],xlabel:'K_1',ylabel:'K_1′'});
   const rows=[]; let u=lnTanh(K0), xiPrev=NaN, K;
   for (let n=0;n<8;n++){ K=KofU(u); const xi=-1/u; rows.push(`<tr><td class="num">${n}</td><td class="num">${K>=1e-4?K.toFixed(5):K.toExponential(3)}</td><td class="num">${xi<1e6&&xi>=1e-3?xi.toFixed(4):xi.toExponential(3)}</td><td class="num">${n?(xiPrev/xi).toFixed(4):'–'}</td></tr>`); xiPrev=xi; u*=2; }
-  $('d1Table').innerHTML='<thead><tr><th style="text-align:right">step n</th><th style="text-align:right">K<sub>1</sub><sup>(n)</sup></th><th style="text-align:right">ξ = −1/ln tanh K</th><th style="text-align:right">ξ<sup>(n−1)</sup>/ξ<sup>(n)</sup></th></tr></thead><tbody>'+rows.join('')+'</tbody>';
+  $('d1Table').innerHTML='<thead><tr><th style="text-align:right">'+tr('step n','단계 n')+'</th><th style="text-align:right">K<sub>1</sub><sup>(n)</sup></th><th style="text-align:right">ξ = −1/ln tanh K</th><th style="text-align:right">ξ<sup>(n−1)</sup>/ξ<sup>(n)</sup></th></tr></thead><tbody>'+rows.join('')+'</tbody>';
   K=K0; let lnZ=0, wt=0.5; for (let n=0;n<60;n++){ lnZ+=wt*K0p(K); K=R1(K); wt/=2; }
-  $('d1Note').innerHTML=`Free energy from the RG offsets: ln Z/N = Σ<sub>n</sub> K<sub>0</sub><sup>(n)</sup>/2<sup>n</sup> = ${lnZ.toFixed(8)}, against the exact ln(2 cosh K<sub>1</sub>) = ${Math.log(2*Math.cosh(K0)).toFixed(8)}.`;
+  $('d1Note').innerHTML=tr(`Free energy from the RG offsets: ln Z/N = Σ<sub>n</sub> K<sub>0</sub><sup>(n)</sup>/2<sup>n</sup> = ${lnZ.toFixed(8)}, against the exact ln(2 cosh K<sub>1</sub>) = ${Math.log(2*Math.cosh(K0)).toFixed(8)}.`,`RG 상수항에서 얻은 자유 에너지: ln Z/N = Σ<sub>n</sub> K<sub>0</sub><sup>(n)</sup>/2<sup>n</sup> = ${lnZ.toFixed(8)}, 정확한 값 ln(2 cosh K<sub>1</sub>) = ${Math.log(2*Math.cosh(K0)).toFixed(8)}과 비교.`);
 }
 
 /* ---------- 2D decimation ---------- */
@@ -540,36 +558,36 @@ function drawD2(){
   const mode=document.querySelector('input[name=tr]:checked').value, R=mode==='drop'?R2a:R2b;
   const Ks=Array.from({length:241},(_,i)=>i*0.005);
   const fp=[[0,0]]; if (mode==='k2') fp.push([KSTAR,KSTAR]);
-  plot($('d2'),{x:[0,1.2],y:[0,1.2],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[1.2,1.2]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R,14).map(p=>[p[0],Math.min(p[1],5)])},{dots:true,r:5,color:C.ink,pts:fp}],vlines:[{x:KC,color:C.l64,dash:[3,4],label:'exact K_c'}],xlabel:'K',ylabel:'K′'});
+  plot($('d2'),{x:[0,1.2],y:[0,1.2],series:[{color:C.muted,dash:[6,4],width:1.1,pts:[[0,0],[1.2,1.2]]},{color:C.accent,width:2.2,pts:Ks.map(k=>[k,R(k)])},{color:C.crit,width:1.3,pts:cobweb(K0,R,14).map(p=>[p[0],Math.min(p[1],5)])},{dots:true,r:5,color:C.ink,pts:fp}],vlines:[{x:KC,color:C.l64,dash:[3,4],label:tr('exact K_c','정확한 K_c')}],xlabel:'K',ylabel:'K′'});
   let K=K0; const seq=[]; for (let i=0;i<6;i++){ seq.push(K.toFixed(4)); K=R(K); if (K>50){ seq.push('→ ∞'); break; } }
   if (mode==='drop'){
-    $('d2Read').innerHTML=`<dt>Fixed points</dt><dd>K* = 0 (stable) and ∞ (unstable)</dd><dt>Flow from the chosen K</dt><dd style="font-weight:500">${seq.join(' → ')}</dd><dt>Verdict</dt><dd>no transition at finite T (wrong)</dd>`;
+    $('d2Read').innerHTML=`<dt>${tr('Fixed points','고정점')}</dt><dd>${tr('K* = 0 (stable) and ∞ (unstable)','K* = 0 (안정), ∞ (불안정)')}</dd><dt>${tr('Flow from the chosen K','고른 K에서의 흐름')}</dt><dd style="font-weight:500">${seq.join(' → ')}</dd><dt>${tr('Verdict','판정')}</dt><dd>${tr('no transition at finite T (wrong)','유한한 T에서 상전이 없음 (틀림)')}</dd>`;
   } else {
     const lam=1.5*Math.tanh(4*KSTAR), b=Math.SQRT2, nu=Math.log(b)/Math.log(lam);
-    $('d2Read').innerHTML=`<dt>Non-trivial fixed point K̃*</dt><dd>${KSTAR.toFixed(4)} (exact K<sub>c</sub> = ${KC.toFixed(4)})</dd><dt>Implied k<sub>B</sub>T<sub>c</sub>/J = 1/K̃*</dt><dd>${(1/KSTAR).toFixed(3)} (exact ${TC.toFixed(3)})</dd><dt>λ = dK̃′/dK̃ at K̃* = (3/2) tanh 4K̃*</dt><dd>${lam.toFixed(4)}</dd><dt>y<sub>t</sub> = ln λ / ln b with b = √2</dt><dd>${(Math.log(lam)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${nu.toFixed(4)} (exact 1)</dd><dt>Flow from the chosen K</dt><dd style="font-weight:500">${seq.join(' → ')}</dd>`;
+    $('d2Read').innerHTML=`<dt>${tr('Non-trivial fixed point K̃*','비자명한 고정점 K̃*')}</dt><dd>${KSTAR.toFixed(4)} (${tr('exact','정확한 값')} K<sub>c</sub> = ${KC.toFixed(4)})</dd><dt>${tr('Implied','이로부터')} k<sub>B</sub>T<sub>c</sub>/J = 1/K̃*</dt><dd>${(1/KSTAR).toFixed(3)} (${tr('exact','정확한 값')} ${TC.toFixed(3)})</dd><dt>${tr('λ = dK̃′/dK̃ at K̃* = (3/2) tanh 4K̃*','K̃*에서 λ = dK̃′/dK̃ = (3/2) tanh 4K̃*')}</dt><dd>${lam.toFixed(4)}</dd><dt>${tr('y<sub>t</sub> = ln λ / ln b with b = √2','y<sub>t</sub> = ln λ / ln b, b = √2')}</dt><dd>${(Math.log(lam)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${nu.toFixed(4)} (${tr('exact','정확한 값')} 1)</dd><dt>${tr('Flow from the chosen K','고른 K에서의 흐름')}</dt><dd style="font-weight:500">${seq.join(' → ')}</dd>`;
   }
   const Kg=Array.from({length:201},(_,i)=>i*0.006);
-  plot($('d2c'),{x:[0,1.2],series:[{color:C.accent,width:2,pts:Kg.map(k=>[k,0.25*Math.log(Math.cosh(4*k))])},{color:C.crit,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))])},{color:C.ink,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))-0.5*Math.log(Math.cosh(2*k))])}],xlabel:'K_1',ylabel:'renormalized couplings'});
+  plot($('d2c'),{x:[0,1.2],series:[{color:C.accent,width:2,pts:Kg.map(k=>[k,0.25*Math.log(Math.cosh(4*k))])},{color:C.crit,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))])},{color:C.ink,width:2,pts:Kg.map(k=>[k,0.125*Math.log(Math.cosh(4*k))-0.5*Math.log(Math.cosh(2*k))])}],xlabel:'K_1',ylabel:tr('renormalized couplings','재규격화된 결합 상수')});
 }
 function drawDec2(){
   const cv=$('dec2'), W=cv.clientWidth, H=cv.clientHeight; if (!W) return; const dpr=window.devicePixelRatio||1; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
   const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
   const n=5, s=Math.min(W/2,H)/(n+1), ox=(W/2-s*(n-1))/2, oy=(H-s*(n-1))/2, r=s*0.22;
-  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", system-ui, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
   const P=(i,j)=>[ox+i*s,oy+j*s];
   ctx.strokeStyle=C.rule; ctx.lineWidth=1.5; ctx.beginPath(); for (let i=0;i<n;i++){ ctx.moveTo(...P(i,0)); ctx.lineTo(...P(i,n-1)); ctx.moveTo(...P(0,i)); ctx.lineTo(...P(n-1,i)); } ctx.stroke();
   const lab={'2,1':'s₁','1,2':'s₂','3,2':'s₄','2,3':'s₃','2,2':'s₅'};
   for (let i=0;i<n;i++) for (let j=0;j<n;j++){ const dec=(i+j)%2===0, [x,y]=P(i,j); ctx.fillStyle=dec?C.muted:C.panel; ctx.strokeStyle=C.ink; ctx.lineWidth=1.3; ctx.fillRect(x-r,y-r,2*r,2*r); ctx.strokeRect(x-r,y-r,2*r,2*r); const L=lab[i+','+j]; if (L){ ctx.fillStyle=dec?C.panel:C.ink; ctx.fillText(L,x,y); } }
-  ctx.fillStyle=C.muted; ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillText('original lattice, coupling K₁',W/4,oy-s*0.75);
+  ctx.fillStyle=C.muted; ctx.font='12px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.fillText(tr('original lattice, coupling K₁','원래 격자, 결합 상수 K₁'),W/4,oy-s*0.75);
   // right: renormalized (rotated) lattice around s1..s4
   const cx=W*0.75, cy=H/2, a=s*1.25, pts={'s₁':[cx,cy-a],'s₂':[cx-a,cy],'s₃':[cx,cy+a],'s₄':[cx+a,cy]};
   ctx.fillStyle=C.grid; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₄']); ctx.lineTo(...pts['s₃']); ctx.lineTo(...pts['s₂']); ctx.closePath(); ctx.fill();
   ctx.strokeStyle=C.accent; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₄']); ctx.lineTo(...pts['s₃']); ctx.lineTo(...pts['s₂']); ctx.closePath(); ctx.stroke();
   ctx.strokeStyle=C.crit; ctx.setLineDash([6,5]); ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(...pts['s₁']); ctx.lineTo(...pts['s₃']); ctx.moveTo(...pts['s₂']); ctx.lineTo(...pts['s₄']); ctx.stroke(); ctx.setLineDash([]);
-  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", system-ui, sans-serif`;
+  ctx.font=`600 ${Math.round(r*0.85)}px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif`;
   Object.entries(pts).forEach(([k,[x,y]])=>{ ctx.fillStyle=C.panel; ctx.strokeStyle=C.ink; ctx.lineWidth=1.3; ctx.fillRect(x-r,y-r,2*r,2*r); ctx.strokeRect(x-r,y-r,2*r,2*r); ctx.fillStyle=C.ink; ctx.fillText(k,x,y); });
-  ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.accent; drawRich(ctx,"K_1′",cx+a*0.62,cy-a*0.62); ctx.fillStyle=C.crit; drawRich(ctx,"K_2′",cx+a*0.18,cy-a*0.35); ctx.fillStyle=C.ink; drawRich(ctx,"K_3′",cx-a*0.32,cy+a*0.3);
-  ctx.fillStyle=C.muted; ctx.fillText('after summing out s₅',cx,oy-s*0.75);
+  ctx.font='12px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.fillStyle=C.accent; drawRich(ctx,"K_1′",cx+a*0.62,cy-a*0.62); ctx.fillStyle=C.crit; drawRich(ctx,"K_2′",cx+a*0.18,cy-a*0.35); ctx.fillStyle=C.ink; drawRich(ctx,"K_3′",cx-a*0.32,cy+a*0.3);
+  ctx.fillStyle=C.muted; ctx.fillText(tr('after summing out s₅','s₅를 더해 없앤 뒤'),cx,oy-s*0.75);
   ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(W*0.48,H/2); ctx.lineTo(W*0.54,H/2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(W*0.54,H/2-5); ctx.lineTo(W*0.55,H/2); ctx.lineTo(W*0.54,H/2+5); ctx.fill();
 }
 
@@ -577,7 +595,7 @@ function drawDec2(){
 const RW=(K,L)=>[2*K*K+L, K*K];
 const KS=1/3, LS=1/9; // fixed point
 const MW=[[4*KS,1],[2*KS,0]];
-const tr=MW[0][0]+MW[1][1], det=MW[0][0]*MW[1][1]-MW[0][1]*MW[1][0], disc=Math.sqrt(tr*tr-4*det), LAM1=(tr+disc)/2, LAM2=(tr-disc)/2;
+const trM=MW[0][0]+MW[1][1], det=MW[0][0]*MW[1][1]-MW[0][1]*MW[1][0], disc=Math.sqrt(trM*trM-4*det), LAM1=(trM+disc)/2, LAM2=(trM-disc)/2;
 const ev=l=>{ const v=[MW[0][1], l-MW[0][0]]; const n=Math.hypot(...v); return [v[0]/n,v[1]/n]; };
 const EV1=ev(LAM1), EV2=ev(LAM2);
 function fate(K,L){ for (let i=0;i<200;i++){ [K,L]=RW(K,L); if (K+L>3) return 1; if (K+L<1e-4) return -1; } return 0; }
@@ -589,7 +607,7 @@ function drawFlow(){
   const cv=$('flow'), W=cv.clientWidth, H=cv.clientHeight; if (!W) return; const dpr=window.devicePixelRatio||1; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
   const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
   const m={l:48,r:10,t:10,b:38}, pw=W-m.l-m.r, ph=H-m.t-m.b, Kmax=0.7, Lmax=0.45, X=k=>m.l+k/Kmax*pw, Y=l=>m.t+ph-l/Lmax*ph;
-  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.font='11px "Public Sans", system-ui, sans-serif'; ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.font='11px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='top';
   for (let k=0;k<=0.7001;k+=0.1){ ctx.beginPath(); ctx.moveTo(X(k),m.t); ctx.lineTo(X(k),m.t+ph); ctx.stroke(); ctx.fillText(k.toFixed(1),X(k),m.t+ph+5); }
   ctx.textAlign='right'; ctx.textBaseline='middle'; for (let l=0;l<=0.4501;l+=0.1){ ctx.beginPath(); ctx.moveTo(m.l,Y(l)); ctx.lineTo(m.l+pw,Y(l)); ctx.stroke(); ctx.fillText(l.toFixed(1),m.l-6,Y(l)); }
   ctx.strokeStyle=C.rule; ctx.strokeRect(m.l+.5,m.t+.5,pw-1,ph-1);
@@ -607,13 +625,13 @@ function drawFlow(){
   // fixed points
   const star=(x,y,R,col)=>{ ctx.fillStyle=col; ctx.beginPath(); for (let k=0;k<10;k++){ const rr=k%2?R*0.45:R, an=-Math.PI/2+k*Math.PI/5; ctx.lineTo(x+rr*Math.cos(an),y+rr*Math.sin(an)); } ctx.closePath(); ctx.fill(); };
   star(X(KS),Y(LS),9,C.crit); ctx.fillStyle=C.ink; ctx.beginPath(); ctx.arc(X(0),Y(0),6,0,7); ctx.fill();
-  ctx.fillStyle=C.ink; ctx.textAlign='left'; ctx.textBaseline='bottom'; ctx.font='12px "Public Sans", system-ui, sans-serif'; ctx.fillText('weak coupling (T = ∞)',X(0)+10,Y(0)-14); ctx.textAlign='right'; ctx.fillText('to strong coupling (T = 0) →',m.l+pw-6,m.t+16);
+  ctx.fillStyle=C.ink; ctx.textAlign='left'; ctx.textBaseline='bottom'; ctx.font='12px "Public Sans", "IBM Plex Sans KR", system-ui, sans-serif'; ctx.fillText(tr('weak coupling (T = ∞)','약결합 (T = ∞)'),X(0)+10,Y(0)-14); ctx.textAlign='right'; ctx.fillText(tr('to strong coupling (T = 0) →','강결합으로 (T = 0) →'),m.l+pw-6,m.t+16);
   ctx.textAlign='left'; drawRich(ctx,'K* = (1/3, 1/9)',X(KS)+10,Y(LS)-8);
-  ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='bottom'; drawRich(ctx,'K (nearest neighbor)',m.l+pw/2,H-1);
-  ctx.save(); ctx.translate(11,m.t+ph/2); ctx.rotate(-Math.PI/2); ctx.textBaseline='middle'; drawRich(ctx,'L (next-nearest neighbor)',0,0); ctx.restore();
+  ctx.fillStyle=C.muted; ctx.textAlign='center'; ctx.textBaseline='bottom'; drawRich(ctx,tr('K (nearest neighbor)','K (최근접)'),m.l+pw/2,H-1);
+  ctx.save(); ctx.translate(11,m.t+ph/2); ctx.rotate(-Math.PI/2); ctx.textBaseline='middle'; drawRich(ctx,tr('L (next-nearest neighbor)','L (차근접)'),0,0); ctx.restore();
   cv._inv=(px,py)=>[(px-m.l)/pw*Kmax,(m.t+ph-py)/ph*Lmax];
   const Kc0=critLine&&critLine.length?critLine[0][0]:NaN, b=Math.SQRT2;
-  $('flRead').innerHTML=`<dt>Non-trivial fixed point (K*, L*)</dt><dd>(1/3, 1/9)</dd><dt>Eigenvalue λ<sub>1</sub> (red direction)</dt><dd>${LAM1.toFixed(4)}, relevant</dd><dt>Eigenvalue λ<sub>2</sub> (green direction)</dt><dd>${LAM2.toFixed(4)}, irrelevant</dd><dt>y<sub>t</sub> = ln λ<sub>1</sub>/ln √2</dt><dd>${(Math.log(LAM1)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${(Math.log(b)/Math.log(LAM1)).toFixed(4)} (exact 1)</dd><dt>Critical coupling on L = 0</dt><dd>K<sub>c</sub> ≈ ${f3(Kc0,4)} (exact ${KC.toFixed(4)})</dd>`;
+  $('flRead').innerHTML=`<dt>${tr('Non-trivial fixed point (K*, L*)','비자명한 고정점 (K*, L*)')}</dt><dd>(1/3, 1/9)</dd><dt>${tr('Eigenvalue λ<sub>1</sub> (red direction)','고윳값 λ<sub>1</sub> (빨간 방향)')}</dt><dd>${LAM1.toFixed(4)}, ${tr('relevant','유관')}</dd><dt>${tr('Eigenvalue λ<sub>2</sub> (green direction)','고윳값 λ<sub>2</sub> (초록 방향)')}</dt><dd>${LAM2.toFixed(4)}, ${tr('irrelevant','무관')}</dd><dt>y<sub>t</sub> = ln λ<sub>1</sub>/ln √2</dt><dd>${(Math.log(LAM1)/Math.log(b)).toFixed(4)}</dd><dt>ν = 1/y<sub>t</sub></dt><dd>${(Math.log(b)/Math.log(LAM1)).toFixed(4)} (${tr('exact','정확한 값')} 1)</dd><dt>${tr('Critical coupling on L = 0','L = 0 위의 임계 결합 상수')}</dt><dd>K<sub>c</sub> ≈ ${f3(Kc0,4)} (${tr('exact','정확한 값')} ${KC.toFixed(4)})</dd>`;
 }
 
 /* ---------- wiring ---------- */
@@ -626,28 +644,29 @@ const io=new IntersectionObserver(es=>{ es.forEach(e=>onScreen.set(e.target,e.is
 document.addEventListener('visibilitychange',kick);
 RM.addEventListener('change',e=>{ if (e.matches) setRun(false); });
 $('bsReset').onclick=bsReset;
-['kd','kyt','kyh'].forEach(id=>$(id).addEventListener('input',()=>{ document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('primary')); drawK(); }));
-document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const [d,yt,yh]=KP[b.dataset.k]; $('kd').value=String(d); $('kyt').value=+yt.toFixed(4); $('kyh').value=yh; document.querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('primary',x===b)); drawK(); });
+['kd','kyt','kyh'].forEach(id=>$(id).addEventListener('input',()=>{ document.querySelectorAll('[data-kp]').forEach(b=>b.classList.remove('primary')); drawK(); }));
+document.querySelectorAll('[data-kp]').forEach(b=>b.onclick=()=>{ const [d,yt,yh]=KP[b.dataset.kp]; $('kd').value=String(d); $('kyt').value=+yt.toFixed(4); $('kyh').value=yh; document.querySelectorAll('[data-kp]').forEach(x=>x.classList.toggle('primary',x===b)); drawK(); });
 $('d1K').addEventListener('input',drawD1);
 $('d2K').addEventListener('input',drawD2);
 document.querySelectorAll('input[name=tr]').forEach(r=>r.onchange=drawD2);
 $('flow').addEventListener('click',e=>{ const r=e.currentTarget.getBoundingClientRect(), [K,L]=e.currentTarget._inv(e.clientX-r.left,e.clientY-r.top); if (K>0&&L>=0) addTraj(K,L); });
-$('flClear').onclick=()=>{ traj.length=0; drawFlow(); $('flMsg').textContent='All trajectories cleared.'; };
+$('flClear').onclick=()=>{ traj.length=0; drawFlow(); $('flMsg').textContent=tr('All trajectories cleared.','궤적을 모두 지웠습니다.'); };
 $('flAdd').onclick=()=>{ const K=+$('flK').value, L=+$('flL').value, ok=$('flK').value.trim()!==''&&$('flL').value.trim()!==''&&K>0&&K<=0.7&&L>=0&&L<=0.45;
-  if (!ok){ $('flMsg').textContent='Enter 0 < K ≤ 0.7 and 0 ≤ L ≤ 0.45.'; return; }
-  addTraj(K,L); const f=fate(K,L); $('flMsg').textContent=`Trajectory from (K, L) = (${K}, ${L}) added: it flows ${f>0?'to strong coupling (ordered, T < T_c)':f<0?'to the origin (disordered, T > T_c)':'into the non-trivial fixed point (critical)'}.`; };
+  if (!ok){ $('flMsg').textContent=tr('Enter 0 < K ≤ 0.7 and 0 ≤ L ≤ 0.45.','0 < K ≤ 0.7, 0 ≤ L ≤ 0.45로 입력하세요.'); return; }
+  addTraj(K,L); const f=fate(K,L); $('flMsg').textContent=tr(`Trajectory from (K, L) = (${K}, ${L}) added: it flows ${f>0?'to strong coupling (ordered, T < T_c)':f<0?'to the origin (disordered, T > T_c)':'into the non-trivial fixed point (critical)'}.`,`(K, L) = (${K}, ${L})에서 시작하는 궤적을 추가했습니다: ${f>0?'강결합(질서, T < T_c)':f<0?'원점(무질서, T > T_c)':'비자명한 고정점(임계)'}으로 흐릅니다.`); };
 ['flK','flL'].forEach(id=>$(id).addEventListener('keydown',e=>{ if (e.key==='Enter'){ e.preventDefault(); $('flAdd').click(); } }));
 $('flCrit').onclick=()=>{ const Kc0=critLine[0][0]; addTraj(Kc0*0.995,0); addTraj(Kc0*1.005,0); addTraj(Kc0,0); };
 let rz=0;
 const ro=new ResizeObserver(()=>{ if (rz) return; rz=requestAnimationFrame(()=>{ rz=0; drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); }); });
 document.querySelectorAll('figure, .plate').forEach(el=>ro.observe(el));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ readColors(); drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); });
+window.addEventListener('langchange',()=>{ $('bsRun').textContent=BS.running?tr('Pause','일시 정지'):tr('Run','실행'); $('flMsg').textContent=''; drawBS(); drawNN(); drawK(); drawD1(); drawD2(); drawDec2(); drawFlow(); });
 new MutationObserver(()=>{ readColors(); drawBS(); drawNN(); drawD1(); drawD2(); drawDec2(); drawFlow(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 // keyboard access to scroll containers: only boxes that actually overflow become tab stops
 function markScrollers(){ document.querySelectorAll('.eq,.tbl').forEach(el=>{ if (el.scrollWidth>el.clientWidth+1){ el.tabIndex=0; } else el.removeAttribute('tabindex'); }); }
 new ResizeObserver(()=>requestAnimationFrame(markScrollers)).observe(document.body);
-readColors(); bsReset(); document.querySelector('[data-k="2d"]').click(); drawD1(); drawD2(); drawDec2(); computeCrit(); drawFlow();
+readColors(); bsReset(); document.querySelector('[data-kp="2d"]').click(); drawD1(); drawD2(); drawDec2(); computeCrit(); drawFlow();
 if (RM.matches) setRun(false); else kick();
 })();
 </script>
@@ -658,13 +677,105 @@ if (RM.matches) setRun(false); else kick();
   const SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>';
   const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/></svg>';
   const current = () => root.dataset.theme || (mq.matches ? "dark" : "light");
-  const sync = () => { const dark = current() === "dark", label = dark ? "Switch to light mode" : "Switch to dark mode";
+  const sync = () => { const dark = current() === "dark", label = dark ? tr("Switch to light mode","밝은 화면으로 전환") : tr("Switch to dark mode","어두운 화면으로 전환");
     btn.innerHTML = dark ? SUN : MOON; btn.setAttribute("aria-label", label); btn.title = label; };
   btn.addEventListener("click", () => { const next = current() === "dark" ? "light" : "dark"; root.dataset.theme = next;
     try { localStorage.setItem("netsci-theme", next); } catch (e) {} sync(); });
   mq.addEventListener("change", sync);
+  window.addEventListener("langchange", sync);
   sync();
 })();
 </script>
+<!-- lang-toggle:body -->
+<script>
+window.I18N_KO={
+"__title": "이징(Ising) 모형의 재규격화 군",
+"k1": "이징(Ising) 모형의 재규격화 군",
+"k2": "T<sub>c<\/sub> 근처에서 격자 간격 말고 유일한 길이 척도는 임계점에서 발산하는 상관 길이 ξ입니다. 격자를 거칠게 만들고(coarse-graining) 다시 축척하면 ξ가 b배 줄어들므로, T<sub>c<\/sub>에서 벗어난 계는 두 자명한 고정점 중 하나로 흘러가고, T<sub>c<\/sub>에서는 자기 닮음을 유지합니다. 이 그림을 방정식으로 옮기면 위덤의 스케일링 가설, 상관 함수의 스케일링 꼴, 그리고 임계 지수의 보편성이 정당화됩니다.",
+"k3": "이상훈 교수의 2장 강의 노트를 바탕으로 하며, K. Christensen and N. R. Moloney, <i>Complexity and Criticality<\/i> (2005)를 따릅니다. 단위: k<sub>B<\/sub> = 1, J = 1. <a href=\"#references\" style=\"color:var(--accent)\">참고문헌<\/a>",
+"k4": "환산 온도 t &lt; 0, t = 0, t &gt; 0에서 정사각 격자 세 개를 실시간으로 시뮬레이션합니다. 각 열은 블록 스핀 변환 R<sub>b<\/sub>를 위에서 아래로 두 번 적용하고, 모든 단계를 같은 크기로 다시 그립니다. 격자는 0.1초마다 국소 단일 스핀 이동(메트로폴리스 스윕)으로 갱신되므로, 자구가 그림에서 그림으로 매끄럽게 변합니다. 새로 시작하면 격자는 먼저 최대 속도로 3 000 스윕 동안 평형에 이르는데, 약 15초가 걸리며 그 뒤에 평균을 내기 시작합니다. T<sub>c<\/sub> 근처에서는 단일 스핀 갱신의 이완이 느리므로, t = 0 열은 한동안 계속 거칠어집니다.",
+"k5": "블록 크기 b",
+"k6": "거칠게 만들기 규칙",
+"k7": "다수결 규칙",
+"k8": "솎아내기 (왼쪽 위 스핀)",
+"k9": "새 격자",
+"k10": "<b>최근접 상관의 흐름<\/b>n번 변환한 뒤 이웃한 블록 스핀 사이의 ⟨s<sub>I<\/sub>s<sub>J<\/sub>⟩를 시간 평균한 값. t &lt; 0이면 1(T = 0 고정점)로 올라가고, t &gt; 0이면 0(T = ∞)으로 내려가며, t = 0에서 가장 적게 변합니다.",
+"k11": "카다노프의 블록 스핀",
+"k12": "스핀은 ξ까지 상관되어 있으므로, ξ보다 작은 영역은 하나의 블록 스핀처럼 행동할 수 있습니다. 실공간 재규격화 절차는 (1) 격자를 선형 크기 b인 블록으로 나누고(각 블록에 b<sup>d<\/sup>개의 스핀), (2) 거칠게 만들기 규칙에 따라 각 블록을 하나의 블록 스핀 s<sub>I<\/sub>로 바꾸고, (3) 모든 길이를 b로 다시 축척하여 원래의 격자 간격을 되찾는 것입니다. 규칙은 유일하지 않습니다: 동점이면 무작위로 정하는 다수결 규칙 s<sub>I<\/sub> = sign(Σ<sub>i∈I<\/sub> s<sub>i<\/sub>)도 있고, 블록 안에서 고른 스핀 하나의 값을 s<sub>I<\/sub>로 삼는 솎아내기도 있습니다. 어느 쪽이든 b보다 작은 규모의 요동은 평균되어 사라집니다.",
+"k13": "상관 길이를 포함한 모든 길이가 b배 줄어듭니다: ξ′ = ξ/b. 임계점에서는 ξ = ∞가 변하지 않고, 그 밖에서는 계가 t = 0에서 멀어집니다. 1차까지 t′ = λ<sub>t<\/sub>(b)t이며, 두 변환을 합성한 조건 λ<sub>t<\/sub>(b<sub>2<\/sub>)λ<sub>t<\/sub>(b<sub>1<\/sub>) = λ<sub>t<\/sub>(b<sub>1<\/sub>b<sub>2<\/sub>), λ<sub>t<\/sub>(1) = 1의 유일한 해는 거듭제곱 법칙입니다:",
+"k14": "t′ = b<sup>y<sub>t<\/sub><\/sup>t,  h′ = b<sup>y<sub>h<\/sub><\/sup>h,  y<sub>t<\/sub>, y<sub>h<\/sub> &gt; 0,  그리고 ξ ∝ |t|<sup>−ν<\/sup>로부터 y<sub>t<\/sub> = 1/ν",
+"k15": "먼저 각 블록 스핀 배치와 들어맞는 배치에 대해 더하면 2<sup>N<\/sup>개의 미시상태를 모두 포함하게 되고, 이로써 e<sup>−βE′<sub>{s<sub>I<\/sub>}<\/sub><\/sup> = Σ e<sup>−βE<sub>{s<sub>i<\/sub>}<\/sub><\/sup>로 재규격화된 에너지 E′이 정의됩니다. 분배함수는 불변이며 Z(t, h, N) = Z(t′, h′, N′), N′ = N/b<sup>d<\/sup>이므로, 스핀당 자유 에너지는 f(t, h) = b<sup>−d<\/sup>f(b<sup>y<sub>t<\/sub><\/sup>t, b<sup>y<sub>h<\/sub><\/sup>h)를 따릅니다. b = |t|<sup>−1/y<sub>t<\/sub><\/sup> ∝ ξ로 고르면 정확히 위덤의 꼴 f<sub>s<\/sub> = |t|<sup>2−α<\/sup>𝓕<sub>±<\/sub>(h/|t|<sup>Δ<\/sup>)가 나오며, 2 − α = νd, Δ = y<sub>h<\/sub>/y<sub>t<\/sub>입니다. g(r, t, h)에 같은 논증을 쓰면 d − 2 + η = 2β y<sub>t<\/sub>입니다. 두 RG 고윳값이 모든 임계 지수를 정합니다:",
+"kp2d": "2차원 이징",
+"kp3d": "3차원 이징",
+"kpmf": "평균장, d = 4",
+"k16": "1차원의 정확한 재규격화",
+"k17": "b = 2로 두고 각 블록 스핀을 홀수 번째 스핀으로 삼습니다(솎아내기). s<sub>1<\/sub>과 s<sub>3<\/sub> 사이의 각 짝수 번째 스핀 s<sub>2<\/sub>에 대해 더하면 2 cosh[K<sub>1<\/sub>(s<sub>1<\/sub> + s<sub>3<\/sub>)] = exp(K<sub>0<\/sub>′ + K<sub>1<\/sub>′s<sub>1<\/sub>s<sub>3<\/sub>)인데, 이는 s<sub>1<\/sub>s<sub>3<\/sub>에만 의존합니다. s<sub>1<\/sub> = ±s<sub>3<\/sub>인 경우를 맞추면:",
+"k19": "분배함수는 스핀이 절반이고 결합 상수가 재규격화된 채로 같은 꼴을 유지합니다. 모든 K<sub>1<\/sub> &gt; 0에 대해 K<sub>1<\/sub>′ &lt; K<sub>1<\/sub>이므로, 흐름은 K<sub>1<\/sub>* = ∞의 불안정한 고정점(T = 0, 완전 정렬, T → 0<sup>+<\/sup>에서 ξ → ∞)에서 멀어져 안정한 고정점 K<sub>1<\/sub>* = 0(T = ∞, 상호작용 없는 스핀, ξ = 0)으로 갑니다. 전달 행렬이 보여 준 대로, 유한한 T에서는 상전이가 없습니다. tanh K<sub>1<\/sub>′ = tanh² K<sub>1<\/sub>이므로 상관 길이 ξ = −1/ln tanh K는 매 단계 정확히 절반이 되고, 상수항 K<sub>0<\/sub>′을 모두 더하면 자유 에너지가 됩니다.",
+"k20": "<b>사상 K<sub>1<\/sub>′ = ½ ln cosh 2K<sub>1<\/sub>과 그 반복<\/b>점선: K′ = K. 빨간 계단은 시작 결합 상수에서부터의 흐름을 따라갑니다.",
+"k21": "시작 결합 상수 K<sub>1<\/sub> = J/k<sub>B<\/sub>T",
+"k22": "2차원에서의 솎아내기",
+"k23": "정사각 격자에서 스핀을 하나 걸러 하나씩 더해 없앱니다(b = <span class=\"rad\"><span class=\"rs\">√<\/span><span class=\"rc\">2<\/span><\/span>, 이어서 45° 회전). 솎아낸 스핀 s<sub>5<\/sub>는 2 cosh[K<sub>1<\/sub>(s<sub>1<\/sub> + s<sub>2<\/sub> + s<sub>3<\/sub> + s<sub>4<\/sub>)]를 통해 네 이웃과 결합하는데, 이를 정확히 다시 쓰려면 새로운 결합이 생겨나야 합니다: 최근접 결합 K<sub>1<\/sub>′, 차근접 결합 K<sub>2<\/sub>′(s<sub>1<\/sub>과 s<sub>3<\/sub>이 이제 s<sub>5<\/sub>를 통해 상호작용), 그리고 네 스핀 결합 K<sub>3<\/sub>′. 여덟 조건을 풀면",
+"k25": "왼쪽: 회색 스핀을 더해 없애고, 남은 스핀 s<sub>1<\/sub>~s<sub>4<\/sub>가 솎아낸 s<sub>5<\/sub>를 둘러쌉니다. 오른쪽: 45° 회전한 재규격화된 격자로, 최근접 결합 K<sub>1<\/sub>′(파랑), 차근접 결합 K<sub>2<\/sub>′(빨강, 점선), 네 스핀 결합 K<sub>3<\/sub>′(음영 사각형)이 있습니다.",
+"k26": "단계를 더 밟을 때마다 더 먼 거리의 결합이 생기므로, 흐름은 무한 차원 결합 공간에서 일어나고 잘라내야 합니다. s<sub>i<\/sub>s<sub>j<\/sub>s<sub>k<\/sub> 같은 홀수 결합은 결코 나타나지 않는데, H = 0에서 E가 s<sub>i<\/sub> → −s<sub>i<\/sub>에 대해 대칭이어야 하기 때문입니다. 두 가지 잘라내기를 비교해 보세요:",
+"k27": "잘라내기",
+"k28": "<span>새 결합을 모두 버림: K′ = ¼ ln cosh 4K<\/span>",
+"k29": "<span>K̃′ = K<sub>1<\/sub>′ + K<sub>2<\/sub>′ = ⅜ ln cosh 4K̃에 K<sub>2<\/sub>′을 남김<\/span>",
+"k30": "<b>잘라낸 사상과 그 고정점<\/b>점선: K′ = K. 점: 고정점. 계단은 고른 K에서 시작합니다.",
+"k31": "시작 결합 상수 K",
+"k32": "<b>K<sub>1<\/sub>에 대한 새로 생긴 결합<\/b>K<sub>1<\/sub>′(파랑), K<sub>2<\/sub>′(빨강), K<sub>3<\/sub>′(진한 색). 고정점(K ≈ 0.5) 근처에서는 K<sub>3<\/sub>′이 다른 둘보다 훨씬 작은데, 그래서 버립니다.",
+"k33": "윌슨의 재규격화 군",
+"k34": "영 자기장의 일반화된 이징(Ising) 모형은 위–아래 대칭을 지키는 모든 결합의 공간 속 한 점 K = (K<sub>1<\/sub>, K<sub>2<\/sub>, K<sub>3<\/sub>, …)입니다: −βE = K<sub>0<\/sub>N + K<sub>1<\/sub>Σ<sub>nn<\/sub>s<sub>i<\/sub>s<sub>j<\/sub> + K<sub>2<\/sub>Σ<sub>nnn<\/sub>s<sub>i<\/sub>s<sub>j<\/sub> + K<sub>3<\/sub>Σ<sub>□<\/sub>s<sub>i<\/sub>s<sub>j<\/sub>s<sub>k<\/sub>s<sub>l<\/sub> + …. 원래 모형은 K<sub>1<\/sub>축 위에 있으며, T = ∞이면 K = 0, T = 0이면 무한대에 있습니다. 변환 K′ = R<sub>b<\/sub>(K)는 처음에 0이었던 결합도 새로 만들어 내는 점화식입니다. R<sub>b<sub>2<\/sub><\/sub>R<sub>b<sub>1<\/sub><\/sub> = R<sub>b<sub>1<\/sub>b<sub>2<\/sub><\/sub>를 만족하지만 역변환이 없으므로, 군이 아니라 반군을 이룹니다.",
+"k35": "ξ(K′) = ξ(K)/b이므로, 고정점 R<sub>b<\/sub>(K*) = K*에서는 ξ(K*) = 0(자명한 약결합·강결합 고정점)이거나 ξ(K*) = ∞(비자명한 고정점)여야 합니다. 각 고정점에는 끌림 영역이 있으며, ξ = ∞인 비자명한 고정점의 끌림 영역이 임계면입니다. K* 근처에서 δK′ = M(b)δK, M<sub>ij<\/sub> = ∂K<sub>i<\/sub>′/∂K<sub>j<\/sub>이고, 그 고유 기저에서 스케일링 장은 u<sub>i<\/sub>′ = λ<sub>i<\/sub>u<sub>i<\/sub>, λ<sub>i<\/sub> = b<sup>y<sub>i<\/sub><\/sup>를 따릅니다. y<sub>i<\/sub> &gt; 0이면 유관(K*에서 밀려남), y<sub>i<\/sub> &lt; 0이면 무관(사라짐), y<sub>i<\/sub> = 0이면 경계적입니다. 무관한 방향들이 임계면을 이루며, 이징 모형의 유관한 장은 t와 h 두 개뿐입니다.",
+"k36": "아래는 정사각 격자 솎아내기의 고전적인 두 결합 근사로, K의 최저차만 남긴 것입니다: K′ = 2K<sup>2<\/sup> + L, L′ = K<sup>2<\/sup>. 여기서 K는 최근접, L은 차근접 결합 상수입니다. 그래프의 아무 곳이나 클릭하거나, 옆에 시작점 (K, L)을 입력하여 궤적을 시작하세요.",
+"k37": "<b>(K, L) 평면의 RG 흐름<\/b>화살표: RG 한 단계. 검은 곡선: 임계선으로, 비자명한 고정점(별)의 끌림 영역입니다. 원점의 점과 오른쪽 위 너머의 점은 약결합·강결합 고정점입니다. 원래 모형은 축 L = 0입니다.",
+"k38": "시작 K",
+"k39": "시작 L",
+"k40": "궤적 추가",
+"k41": "궤적 지우기",
+"k42": "L = 0 위에서 임계점 바로 옆에서 시작",
+"k43": "임계선 위에서 시작한 궤적은 무관한 방향을 따라 고정점으로 흘러 들어갑니다. 유관한 방향으로 조금이라도 벗어나면 그 차이는 매 단계 λ<sub>1<\/sub>배로 커져, 자명한 고정점 중 하나로 밀려납니다: 고온(원점 쪽) 또는 저온(무한대 쪽).",
+"k44": "상수 인자 e<sup>N′K<sub>0<\/sub>′<\/sup>를 빼면 Z는 불변이므로, 자유 에너지의 특이 부분은 f<sub>s<\/sub>(K) = b<sup>−d<\/sup>f<sub>s<\/sub>(K′)를 따릅니다. n단계 뒤 스케일링 장으로 쓰면 f<sub>s<\/sub>(t, h, u<sub>3<\/sub>, …) = b<sup>−nd<\/sup>f<sub>s<\/sub>(b<sup>ny<sub>t<\/sub><\/sup>t, b<sup>ny<sub>h<\/sub><\/sup>h, b<sup>ny<sub>3<\/sub><\/sup>u<sub>3<\/sub>, …)입니다. n → ∞에서 무관한 장은 사라지고, b<sup>ny<sub>t<\/sub><\/sup> = |t|<sup>−1<\/sup>로 고르면 f<sub>s<\/sub> = |t|<sup>d/y<sub>t<\/sub><\/sup>𝓕<sub>±<\/sub>(h/|t|<sup>y<sub>h<\/sub>/y<sub>t<\/sub><\/sup>)가 됩니다: 위덤의 가설이며, 2 − α = d/y<sub>t<\/sub> = dν, Δ = y<sub>h<\/sub>/y<sub>t<\/sub>입니다. 결합이 같은 고정점으로 흐르는 모형은 모두 같은 y<sub>t<\/sub>와 y<sub>h<\/sub>, 따라서 같은 임계 지수를 가집니다. 이것이 보편성입니다.",
+"k45": "참고문헌",
+"k46": "<b>핵심 참고문헌.<\/b> K. Christensen and N. R. Moloney, <i>Complexity and Criticality<\/i>, Imperial College Press, London (2005), Chapter 2.",
+"k50": "H. J. Maris and L. P. Kadanoff, “Teaching the renormalization group,” <i>Am. J. Phys.<\/i> <b>46<\/b>, 652 (1978). 흐름 그림에 쓴 두 결합 근사.",
+"k53": "블록 스핀 격자는 메트로폴리스 단일 스핀 갱신만으로 진행합니다: 평형을 위해 최대 속도로 3 000 스윕(진행 과정을 보여 줌), 그다음 0.1초마다 한 스윕. 나머지 곡선은 모두 점화식에서 나옵니다.",
+"k54": "이상훈 교수의 강의 노트를 바탕으로 Claude Opus 5.5가 만들었습니다.",
+"k18": "K<sub>1<\/sub>′ = ½ ln cosh(2K<sub>1<\/sub>),  K<sub>0<\/sub>′ = ln[2<span class=\"rad\"><span class=\"rs\">√<\/span><span class=\"rc\">cosh 2K<sub>1<\/sub><\/span><\/span>],  Z(K<sub>1<\/sub>, N) = e<sup>N′K<sub>0<\/sub>′<\/sup> Z(K<sub>1<\/sub>′, N′)",
+"k24": "K<sub>1<\/sub>′ = ¼ ln cosh 4K<sub>1<\/sub>,  K<sub>2<\/sub>′ = ⅛ ln cosh 4K<sub>1<\/sub>,  K<sub>3<\/sub>′ = ⅛ ln cosh 4K<sub>1<\/sub> − ½ ln cosh 2K<sub>1<\/sub>",
+"k47": "L. P. Kadanoff, “Scaling laws for Ising models near T<sub>c<\/sub>,” <i>Physics<\/i> <b>2<\/b>, 263 (1966).",
+"k48": "K. G. Wilson, “Renormalization group and critical phenomena. I. Renormalization group and the Kadanoff scaling picture,” <i>Phys. Rev. B<\/i> <b>4<\/b>, 3174 (1971).",
+"k49": "K. G. Wilson, “Renormalization group and critical phenomena. II. Phase-space cell analysis of critical behavior,” <i>Phys. Rev. B<\/i> <b>4<\/b>, 3184 (1971).",
+"k51": "N. Goldenfeld, <i>Lectures on Phase Transitions and the Renormalization Group<\/i>, Addison-Wesley (1992).",
+"k52": "J. Cardy, <i>Scaling and Renormalization in Statistical Physics<\/i>, Cambridge University Press (1996)."
+};
+(function(){
+  // English / 한국어 switch shared by the course demos; the choice is remembered across pages
+  var KEY='lshlj82-demo-lang', root=document.documentElement, KO=window.I18N_KO||{}, EN={};
+  var els=[].slice.call(document.querySelectorAll('[data-k]'));
+  els.forEach(function(e){EN[e.getAttribute('data-k')]=e.innerHTML;});
+  var titleEN=document.title;
+  var btn=document.createElement('button');btn.id='langBtn';btn.type='button';document.body.appendChild(btn);
+  function typeset(list){
+    if(!list.length)return;
+    if(window.MathJax&&MathJax.typesetPromise){var go=function(){MathJax.typesetPromise(list).catch(function(){});};
+      if(MathJax.startup&&MathJax.startup.promise)MathJax.startup.promise.then(go);else go();}
+    if(window.renderMathInElement&&window.KATEX_OPTS)list.forEach(function(e){try{renderMathInElement(e,window.KATEX_OPTS)}catch(_){}}); 
+  }
+  function apply(l,first){
+    window.LANG=l;root.dataset.lang=l;root.lang=l;var changed=[];
+    els.forEach(function(e){var k=e.getAttribute('data-k'),s=(l==='ko'&&KO[k]!=null)?KO[k]:EN[k];if(e.innerHTML!==s){e.innerHTML=s;changed.push(e);}});
+    document.title=(l==='ko'&&KO.__title)?KO.__title:titleEN;
+    btn.textContent=l==='ko'?'EN':'한국어';btn.setAttribute('aria-label',l==='ko'?'View in English':'한국어로 보기');btn.title=btn.getAttribute('aria-label');
+    btn.setAttribute('lang',l==='ko'?'en':'ko');
+    if(!first)typeset(changed);
+    window.dispatchEvent(new CustomEvent('langchange',{detail:{lang:l}}));
+    // canvases drawn before the Korean web font arrives are redrawn once it has loaded
+    if(l==='ko'&&document.fonts&&!document.fonts.check('16px "IBM Plex Sans KR"','가'))document.fonts.load('16px "IBM Plex Sans KR"','가').then(function(){if(window.LANG==='ko')window.dispatchEvent(new CustomEvent('langchange',{detail:{lang:'ko'}}));}).catch(function(){});
+  }
+  btn.addEventListener('click',function(){var n=window.LANG==='ko'?'en':'ko';try{localStorage.setItem(KEY,n)}catch(e){}apply(n,false);});
+  apply(window.LANG||'en',true);
+})();
+</script>
+<!-- lang-toggle:body-end -->
 </body>
 </html>
